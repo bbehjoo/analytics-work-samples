@@ -4,8 +4,10 @@ build_report.py — render the executive insights report as a self-contained HTM
 page, computed live from the dbt marts in grafana.duckdb.
 
 This is the visual companion to reports/revenue_insights_report.md: same findings,
-but with KPI tiles and interactive charts. Output is written to the repo-root
-docs/ folder so it can be served by GitHub Pages.
+but with KPI tiles and interactive charts. Chart.js is inlined so the output is a
+single self-contained file; it is written as the canonical
+reports/revenue_insights_report.html and copied to the repo-root docs/ folder for
+GitHub Pages (which can only serve from / or /docs).
 
 Run (from revenue-analytics-dbt/, after `dbt build`):
     python scripts/build_report.py
@@ -13,13 +15,16 @@ Run (from revenue-analytics-dbt/, after `dbt build`):
 import datetime
 import json
 import os
+import re
 
 import duckdb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DBT_DIR = os.path.dirname(HERE)
 REPO_ROOT = os.path.dirname(DBT_DIR)
-DOCS_DIR = os.path.join(REPO_ROOT, "docs")
+DOCS_DIR = os.path.join(REPO_ROOT, "docs")              # GitHub Pages publish dir
+REPORTS_DIR = os.path.join(DBT_DIR, "reports")          # canonical, beside the .md
+VENDOR_JS = os.path.join(HERE, "vendor", "chart.umd.min.js")  # build input, not served
 DB_PATH = os.path.join(DBT_DIR, "grafana.duckdb")
 os.makedirs(DOCS_DIR, exist_ok=True)
 
@@ -158,7 +163,7 @@ HTML = r"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Revenue Insights — QBR (work sample)</title>
-<script src="vendor/chart.umd.min.js"></script>
+<script>__CHARTJS__</script>
 <style>
   :root{
     --bg:#eef2f6; --card:#ffffff; --ink:#16222e; --muted:#5b6b7b; --line:#e2e8f0;
@@ -329,14 +334,26 @@ new Chart($('recon'), {type:'bar',
 def main():
     data = build_data()
     today = datetime.date.today().isoformat()
-    html = HTML.replace("__DATA__", json.dumps(data)).replace("__GENERATED__", today)
-    out = os.path.join(DOCS_DIR, "index.html")
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(html)
-    # GitHub Pages: don't run Jekyll on the static site
-    open(os.path.join(DOCS_DIR, ".nojekyll"), "w").close()
-    print(f"Wrote {out}")
-    print(f"KPIs: " + " | ".join(f"{k['label']}={k['value']}" for k in data['kpis']))
+    with open(VENDOR_JS, "r", encoding="utf-8") as f:
+        chartjs = f.read()
+    # neutralize any literal "</script" so the inlined library can't close the tag early
+    chartjs = re.sub(r"</(script)", r"<\\/\1", chartjs, flags=re.IGNORECASE)
+    html = (HTML
+            .replace("__DATA__", json.dumps(data))
+            .replace("__GENERATED__", today)
+            .replace("__CHARTJS__", chartjs))
+    # Canonical copy sits beside the markdown report; an identical copy is published
+    # to docs/ for GitHub Pages (which can only serve from / or /docs).
+    targets = [
+        os.path.join(REPORTS_DIR, "revenue_insights_report.html"),
+        os.path.join(DOCS_DIR, "index.html"),
+    ]
+    for out in targets:
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"Wrote {out}")
+    open(os.path.join(DOCS_DIR, ".nojekyll"), "w").close()  # Pages: skip Jekyll
+    print("KPIs: " + " | ".join(f"{k['label']}={k['value']}" for k in data['kpis']))
 
 
 if __name__ == "__main__":

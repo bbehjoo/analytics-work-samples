@@ -1,8 +1,9 @@
 # Revenue Insights — Quarterly Business Review (sample)
 
-> 📊 A **visual, charted version** of this report is published at
+> 📊 A **visual, charted version** of this report sits beside this file as
+> [`revenue_insights_report.html`](revenue_insights_report.html) and is published at
 > **[bbehjoo.github.io/analytics-work-samples](https://bbehjoo.github.io/analytics-work-samples/)**
-> (generated from the marts by [`scripts/build_report.py`](../scripts/build_report.py)).
+> — both generated from the marts by [`scripts/build_report.py`](../scripts/build_report.py).
 
 *Built entirely on the marts in this dbt project, against synthetic Salesforce +
 NetSuite data. Every figure below is reproducible — the source mart/metric is

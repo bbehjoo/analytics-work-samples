@@ -27,6 +27,8 @@ python scripts/generate_seeds.py     # deterministic synthetic Salesforce + NetS
 dbt deps                             # install dbt_utils
 dbt build                            # seeds -> staging -> intermediate -> marts + 97 data tests
 dbt docs generate && dbt docs serve  # browse the documented DAG
+
+python scripts/build_report.py       # regenerate the visual HTML report (reports/ + docs/)
 ```
 
 `dbt build` runs the whole pipeline and every test in one command (expect
