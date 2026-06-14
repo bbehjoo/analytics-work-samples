@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revenue Insights — QBR (work sample)</title>
+<script src="vendor/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#eef2f6; --card:#ffffff; --ink:#16222e; --muted:#5b6b7b; --line:#e2e8f0;
+    --navy:#12395b; --blue:#2f6db0; --teal:#1f9d8f; --amber:#d99a2b; --red:#c0492b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 64px}
+  header.top{margin-bottom:8px}
+  header.top h1{margin:0 0 4px;font-size:30px;letter-spacing:-.4px}
+  header.top .sub{color:var(--muted);font-size:15px}
+  .pill{display:inline-block;background:#dbe7f2;color:var(--navy);font-size:12px;
+    font-weight:600;padding:3px 10px;border-radius:999px;margin-bottom:14px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0 8px}
+  @media(max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    box-shadow:0 1px 2px rgba(16,38,58,.04)}
+  .kpi .v{font-size:26px;font-weight:700;color:var(--navy);letter-spacing:-.5px}
+  .kpi .l{font-size:13px;color:var(--ink);font-weight:600;margin-top:2px}
+  .kpi .s{font-size:12px;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;
+    margin-top:20px;box-shadow:0 1px 2px rgba(16,38,58,.04)}
+  .card h2{margin:0 0 2px;font-size:19px}
+  .card .src{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:center}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .chartbox{position:relative;height:300px}
+  .note h3{margin:6px 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+  .note p{margin:0 0 12px;font-size:14.5px}
+  .tag{font-weight:700}
+  .tag.good{color:var(--teal)} .tag.bad{color:var(--red)} .tag.navy{color:var(--navy)}
+  footer{color:var(--muted);font-size:12.5px;margin-top:28px;text-align:center}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="pill">Work sample · synthetic data · generated from the dbt marts</span>
+  <header class="top">
+    <h1>Revenue Insights — Quarterly Business Review</h1>
+    <div class="sub">A visual read of the Salesforce + NetSuite revenue marts. Every number is computed live from <code>fct_arr</code>, <code>fct_acv</code>, <code>fct_usage</code>, and <code>rpt_contract_to_netsuite_recon</code>.</div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>1 · ARR growth &amp; the waterfall</h2>
+    <div class="src">Source: <code>fct_arr</code> · the company ARR bridge balances to the cent (enforced by a dbt test)</div>
+    <div class="grid">
+      <div class="chartbox"><canvas id="arrTrend"></canvas></div>
+      <div class="note">
+        <h3>What it is</h3>
+        <p>ARR grew from ~$1.5M to <span class="tag navy">$82.1M</span> over three years.</p>
+        <h3>Why it matters</h3>
+        <p>The engine is shifting from new logo to <span class="tag good">expansion</span> (land-and-expand maturing), but <span class="tag bad">churn is accelerating</span> — net new ARR is flat only because expansion masks it.</p>
+        <h3>What to do</h3>
+        <p>Pressure-test the new-logo top of funnel and stand up a churn early-warning from §4.</p>
+      </div>
+    </div>
+    <div class="chartbox" style="height:280px;margin-top:18px"><canvas id="arrBridge"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Bookings &amp; pipeline — the sales view</h2>
+    <div class="src">Source: <code>fct_acv</code> (opportunity-line grain) joined to <code>dim_account</code></div>
+    <div class="grid">
+      <div class="chartbox"><canvas id="bookingsCat"></canvas></div>
+      <div class="chartbox"><canvas id="bookingsSeg"></canvas></div>
+    </div>
+    <div class="note">
+      <p style="margin-top:14px"><b>Renewals are the largest bookings category</b> — protecting the renewal base matters as much as new sales. Mid-Market is the bookings volume engine; open pipeline is the forward indicator against the new-logo gap above.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3 · Usage vs entitlement — quantified expansion &amp; churn list</h2>
+    <div class="src">Source: <code>fct_usage</code> (consumption vs the subscription in force that month)</div>
+    <div class="grid">
+      <div class="chartbox"><canvas id="usage"></canvas></div>
+      <div class="note">
+        <h3>Why it matters</h3>
+        <p><span class="tag good" id="overPct"></span> of subscriptions consume <b>over</b> their entitlement — a warm, evidence-backed upsell list — while <span class="tag bad" id="underPct"></span> are <b>under-utilized</b> ahead of renewal (churn risk).</p>
+        <h3>What to do</h3>
+        <p>Route over-entitlement accounts to AMs as expansion plays; route under-utilized accounts near renewal to CS.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4 · Finance hygiene — Salesforce ↔ NetSuite reconciliation</h2>
+    <div class="src">Source: <code>rpt_contract_to_netsuite_recon</code> · a closed-loop dbt test asserts these counts</div>
+    <div class="grid">
+      <div class="chartbox"><canvas id="recon"></canvas></div>
+      <div class="note">
+        <h3>What it is</h3>
+        <p>Every contract matched to its NetSuite order &amp; invoices, with the disagreements bucketed.</p>
+        <h3>Why it matters</h3>
+        <p><b>Missing-in-NetSuite is the biggest exposure</b>: contracted revenue with no ERP order — a close-the-books and revenue-recognition risk, not a rounding nuisance.</p>
+        <h3>What to do</h3>
+        <p>Work the missing + orphan records first; auto-clear currency rounding with a materiality threshold; make this a standing month-end check.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Generated 2026-06-14 from <code>grafana.duckdb</code> · all data synthetic ·
+    <a href="https://github.com/bbehjoo/analytics-work-samples">github.com/bbehjoo/analytics-work-samples</a>
+  </footer>
+</div>
+
+<script>
+const DATA = {"kpis": [{"label": "Ending ARR", "value": "$82.1M", "sub": "Dec 2025 run-rate"}, {"label": "Net Revenue Retention", "value": "101%", "sub": "period approximation"}, {"label": "Gross Revenue Retention", "value": "99%", "sub": "period approximation"}, {"label": "Bookings ACV (FY2025)", "value": "$95.4M", "sub": "closed-won"}, {"label": "Open Pipeline ACV", "value": "$17.9M", "sub": "83 opportunities"}, {"label": "$ at risk (recon)", "value": "$2.8M", "sub": "SFDC vs NetSuite"}], "arr_trend": {"labels": ["2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"], "values": [1.51, 7.4, 7.78, 10.09, 14.86, 18.93, 20.09, 21.28, 23.24, 27.73, 30.49, 30.77, 31.51, 34.46, 35.81, 37.5, 39.53, 41.71, 41.95, 42.9, 46.3, 48.58, 54.69, 57.0, 59.19, 61.45, 65.6, 67.44, 69.49, 76.54, 76.93, 77.95, 78.96, 81.07, 83.88, 82.08]}, "arr_bridge": {"years": ["2023", "2024", "2025"], "new_logo": [29.68, 23.41, 14.46], "expansion": [1.19, 5.84, 20.25], "downgrade": [-0.1, -0.38, -1.32], "churn": [0.0, -2.65, -8.31], "ending": [30.77, 57.0, 82.08]}, "bookings_cat": {"labels": ["Renewal", "New logo", "Cross-sell", "Upsell"], "values": [93.54, 69.03, 13.97, 13.32]}, "bookings_seg": {"labels": ["Mid-Market", "SMB", "Enterprise"], "values": [76.7, 64.09, 47.27], "deals": [265, 219, 170]}, "usage": {"over": 2264, "healthy": 4298, "under": 715, "over_pct": 31.1, "under_pct": 9.8}, "recon": {"labels": ["Missing in NetSuite", "Amount mismatch", "Orphan in NetSuite", "Currency rounding", "Partially invoiced", "Timing difference"], "values": [2.224, 0.408, 0.207, 0.0, 0.0, 0.0], "counts": [8, 15, 5, 6, 12, 10]}};
+const fmtM = v => '$' + v.toFixed(1) + 'M';
+const C = {navy:'#12395b', blue:'#2f6db0', teal:'#1f9d8f', amber:'#d99a2b', red:'#c0492b', gray:'#9fb0c0'};
+const $ = id => document.getElementById(id);
+
+// KPI tiles
+document.getElementById('kpis').innerHTML = DATA.kpis.map(k =>
+  `<div class="kpi"><div class="v">${k.value}</div><div class="l">${k.label}</div><div class="s">${k.sub}</div></div>`).join('');
+document.getElementById('overPct').textContent = DATA.usage.over_pct + '%';
+document.getElementById('underPct').textContent = DATA.usage.under_pct + '%';
+
+Chart.defaults.font.family = "-apple-system, Segoe UI, Roboto, sans-serif";
+Chart.defaults.color = '#5b6b7b';
+const money = {ticks:{callback:v=>'$'+v+'M'}};
+
+new Chart($('arrTrend'), {type:'line',
+  data:{labels:DATA.arr_trend.labels, datasets:[{label:'ARR', data:DATA.arr_trend.values,
+    borderColor:C.navy, backgroundColor:'rgba(18,57,91,.08)', fill:true, tension:.25, pointRadius:0, borderWidth:2}]},
+  options:{plugins:{legend:{display:false}}, scales:{y:money, x:{ticks:{maxTicksLimit:8}}}, maintainAspectRatio:false}});
+
+new Chart($('arrBridge'), {
+  data:{labels:DATA.arr_bridge.years, datasets:[
+    {type:'bar', label:'New logo', data:DATA.arr_bridge.new_logo, backgroundColor:C.navy, stack:'m'},
+    {type:'bar', label:'Expansion', data:DATA.arr_bridge.expansion, backgroundColor:C.teal, stack:'m'},
+    {type:'bar', label:'Downgrade', data:DATA.arr_bridge.downgrade, backgroundColor:C.amber, stack:'m'},
+    {type:'bar', label:'Churn', data:DATA.arr_bridge.churn, backgroundColor:C.red, stack:'m'},
+    {type:'line', label:'Ending ARR', data:DATA.arr_bridge.ending, borderColor:'#16222e', borderWidth:2, pointRadius:3, tension:.2}
+  ]},
+  options:{plugins:{title:{display:true,text:'ARR movement by year ($M)'}}, responsive:true, maintainAspectRatio:false,
+    scales:{x:{stacked:true}, y:{stacked:true, ...money}}}});
+
+new Chart($('bookingsCat'), {type:'doughnut',
+  data:{labels:DATA.bookings_cat.labels, datasets:[{data:DATA.bookings_cat.values,
+    backgroundColor:[C.navy,C.teal,C.blue,C.amber,C.red,C.gray]}]},
+  options:{plugins:{legend:{position:'right'}, title:{display:true,text:'Bookings ACV by category ($M)'}}, maintainAspectRatio:false}});
+
+new Chart($('bookingsSeg'), {type:'bar',
+  data:{labels:DATA.bookings_seg.labels, datasets:[{label:'Bookings ACV', data:DATA.bookings_seg.values, backgroundColor:C.blue}]},
+  options:{plugins:{legend:{display:false}, title:{display:true,text:'Bookings ACV by segment ($M)'}}, scales:{y:money}, maintainAspectRatio:false}});
+
+new Chart($('usage'), {type:'doughnut',
+  data:{labels:['Over entitlement','Healthy (50–100%)','Under-utilized (<50%)'],
+    datasets:[{data:[DATA.usage.over, DATA.usage.healthy, DATA.usage.under], backgroundColor:[C.teal,C.gray,C.red]}]},
+  options:{plugins:{legend:{position:'bottom'}, title:{display:true,text:'Subscription-months by utilization'}}, maintainAspectRatio:false}});
+
+new Chart($('recon'), {type:'bar',
+  data:{labels:DATA.recon.labels, datasets:[{label:'$ at risk', data:DATA.recon.values, backgroundColor:C.red}]},
+  options:{indexAxis:'y', plugins:{legend:{display:false}, title:{display:true,text:'$M at risk by discrepancy'}}, scales:{x:money}, maintainAspectRatio:false}});
+</script>
+</body>
+</html>

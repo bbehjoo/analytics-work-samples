@@ -17,6 +17,8 @@ BigQuery-portable.
 This mirrors the centralized revenue marts I built at Turnitin, rebuilt from scratch
 on synthetic data.
 
+📊 **[Live visual report →](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🗺️ **[Data model & lineage diagrams →](revenue-analytics-dbt/DATA_MODEL.md)**
+
 **What it demonstrates**
 - **Layered modeling** — staging → intermediate → marts (dims + facts), the way a
   real warehouse is organized.
@@ -30,8 +32,10 @@ on synthetic data.
   the waterfall balances and the reconciliation is complete.
 - **A semantic + documentation layer** built for self-serve and **AI/MCP**
   consumption (every model and column described; metrics defined once in MetricFlow).
-- **Communication** — a stakeholder-ready [insights report](revenue-analytics-dbt/reports/revenue_insights_report.md)
-  that frames each finding as *what it is / why it matters / what to do*.
+- **Communication** — a stakeholder-ready insights report, as a
+  [live visual page](https://bbehjoo.github.io/analytics-work-samples/) and in
+  [markdown](revenue-analytics-dbt/reports/revenue_insights_report.md), framing each
+  finding as *what it is / why it matters / what to do*.
 
 → See [revenue-analytics-dbt/README.md](revenue-analytics-dbt/README.md) for the
 architecture, the ARR/ACV definitions, and how to run it.

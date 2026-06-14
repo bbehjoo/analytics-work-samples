@@ -11,6 +11,8 @@ to BigQuery by swapping the profile.
 > Built as an interview work sample. It mirrors the kind of centralized revenue marts
 > I built at Turnitin, rebuilt from scratch on generated data.
 
+📊 **[Live visual report](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🗺️ **[ERD & lineage diagrams](DATA_MODEL.md)**
+
 ---
 
 ## Quickstart
@@ -51,6 +53,9 @@ seeds (raw_salesforce / raw_netsuite / raw_usage)   <- synthetic CSVs, emulate t
         │
    models/semantic/  MetricFlow semantic models + metrics on the marts
 ```
+
+See **[DATA_MODEL.md](DATA_MODEL.md)** for the entity-relationship diagram (how the
+marts relate) and a per-mart build-up DAG (how each is assembled from the sources).
 
 ### The marts
 
