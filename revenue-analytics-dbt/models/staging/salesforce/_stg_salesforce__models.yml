@@ -1,0 +1,105 @@
+version: 2
+
+models:
+  - name: stg_salesforce__accounts
+    description: Cleaned Salesforce accounts — one row per account with firmographics and segmentation.
+    columns:
+      - name: account_id
+        description: Primary key — Salesforce account id.
+        tests: [unique, not_null]
+      - name: owner_id
+        description: Owning rep (FK to users).
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__users')
+              field: user_id
+
+  - name: stg_salesforce__users
+    description: Cleaned Salesforce users (sales reps).
+    columns:
+      - name: user_id
+        description: Primary key — Salesforce user id.
+        tests: [unique, not_null]
+
+  - name: stg_salesforce__products
+    description: Cleaned product catalog with hierarchy and recurring flag.
+    columns:
+      - name: product_id
+        description: Primary key — product id / SKU.
+        tests: [unique, not_null]
+      - name: is_recurring
+        description: True for ARR-eligible subscription products.
+        tests: [not_null]
+
+  - name: stg_salesforce__opportunities
+    description: Cleaned opportunities — open pipeline and closed (won/lost) deals.
+    columns:
+      - name: opportunity_id
+        description: Primary key — opportunity id.
+        tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__accounts')
+              field: account_id
+      - name: opportunity_type
+        description: New Business, Expansion, Renewal, Downgrade, or Churn.
+        tests:
+          - accepted_values:
+              values: ['New Business', 'Expansion', 'Renewal', 'Downgrade', 'Churn']
+      - name: is_won
+        tests: [not_null]
+      - name: is_closed
+        tests: [not_null]
+
+  - name: stg_salesforce__opportunity_line_items
+    description: Cleaned opportunity line items — the grain of bookings / ACV.
+    columns:
+      - name: opportunity_line_id
+        description: Primary key — opportunity line id.
+        tests: [unique, not_null]
+      - name: opportunity_id
+        description: FK to opportunities.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__opportunities')
+              field: opportunity_id
+      - name: product_id
+        description: FK to products.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__products')
+              field: product_id
+
+  - name: stg_salesforce__contracts
+    description: Cleaned contracts; external_order_ref reconciles to NetSuite.
+    columns:
+      - name: contract_id
+        description: Primary key — contract id.
+        tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__accounts')
+              field: account_id
+
+  - name: stg_salesforce__subscriptions
+    description: Cleaned subscription segments — the ARR source of truth.
+    columns:
+      - name: subscription_id
+        description: Primary key — subscription segment id.
+        tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__accounts')
+              field: account_id
+      - name: product_id
+        description: FK to products.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__products')
+              field: product_id

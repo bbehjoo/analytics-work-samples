@@ -1,0 +1,13 @@
+ns_item_id,item_name,item_type,sfdc_product_external_id
+NSI-001,Grafana Cloud Metrics,Service,GC-METRICS
+NSI-002,Prometheus Managed,Service,PROM-MGD
+NSI-003,Grafana Cloud Logs,Service,GC-LOGS
+NSI-004,Loki Enterprise,Service,LOKI-ENT
+NSI-005,Grafana Cloud Traces,Service,GC-TRACES
+NSI-006,Tempo Enterprise,Service,TEMPO-ENT
+NSI-007,Grafana OnCall,Service,ONCALL
+NSI-008,Grafana SLO,Service,SLO
+NSI-009,Grafana Enterprise Stack,Service,ENT-STACK
+NSI-010,Implementation Services,OtherCharge,PS-IMPL
+NSI-011,Training Package,OtherCharge,PS-TRAIN
+NSI-012,Migration Services,OtherCharge,PS-MIGR

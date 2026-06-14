@@ -1,0 +1,163 @@
+version: 2
+
+# ---------------------------------------------------------------------------
+# Metrics defined on top of the semantic models. Group any of these by a shared
+# dimension, e.g.:
+#   mf query --metrics net_revenue_retention --group-by metric_time
+#   mf query --metrics bookings_acv --group-by account__segment,metric_time
+# ---------------------------------------------------------------------------
+
+metrics:
+
+  # ------------------------------- ARR ----------------------------------
+  - name: total_arr
+    label: Total ARR
+    description: Recurring run-rate. Group by metric_time (month) for the ARR trend.
+    type: simple
+    type_params:
+      measure: ending_arr
+
+  - name: beginning_arr
+    label: Beginning ARR
+    type: simple
+    type_params:
+      measure: beginning_arr
+
+  - name: net_new_arr
+    label: Net New ARR
+    description: Net change in ARR (sum of all movement buckets).
+    type: simple
+    type_params:
+      measure: net_new_arr
+
+  - name: new_logo_arr
+    label: New Logo ARR
+    type: simple
+    type_params:
+      measure: new_logo_arr
+
+  - name: cross_sell_arr
+    label: Cross-sell ARR
+    type: simple
+    type_params:
+      measure: cross_sell_arr
+
+  - name: upsell_arr
+    label: Upsell ARR
+    type: simple
+    type_params:
+      measure: upsell_arr
+
+  - name: downgrade_arr
+    label: Downgrade ARR
+    type: simple
+    type_params:
+      measure: downgrade_arr
+
+  - name: churned_arr
+    label: Churned ARR
+    type: simple
+    type_params:
+      measure: churn_arr
+
+  - name: expansion_arr
+    label: Expansion ARR
+    description: Upsell + cross-sell.
+    type: derived
+    type_params:
+      expr: upsell_arr + cross_sell_arr
+      metrics:
+        - name: upsell_arr
+        - name: cross_sell_arr
+
+  - name: gross_revenue_retention
+    label: Gross Revenue Retention
+    description: (beginning + downgrade + churn) / beginning. Period-based approximation.
+    type: derived
+    type_params:
+      expr: (beginning_arr + downgrade_arr + churned_arr) / nullif(beginning_arr, 0)
+      metrics:
+        - name: beginning_arr
+        - name: downgrade_arr
+        - name: churned_arr
+
+  - name: net_revenue_retention
+    label: Net Revenue Retention
+    description: (beginning + upsell + cross-sell + downgrade + churn) / beginning. Period-based approximation.
+    type: derived
+    type_params:
+      expr: (beginning_arr + upsell_arr + cross_sell_arr + downgrade_arr + churned_arr) / nullif(beginning_arr, 0)
+      metrics:
+        - name: beginning_arr
+        - name: upsell_arr
+        - name: cross_sell_arr
+        - name: downgrade_arr
+        - name: churned_arr
+
+  # ------------------------------- ACV ----------------------------------
+  - name: bookings_acv
+    label: Bookings ACV
+    description: ACV of closed-won opportunity lines.
+    type: simple
+    type_params:
+      measure: acv_amount
+    filter: "{{ Dimension('acv__deal_status') }} = 'won'"
+
+  - name: pipeline_acv
+    label: Pipeline ACV
+    description: ACV of open opportunity lines.
+    type: simple
+    type_params:
+      measure: acv_amount
+    filter: "{{ Dimension('acv__deal_status') }} = 'open'"
+
+  - name: new_logo_bookings_acv
+    label: New Logo Bookings ACV
+    type: simple
+    type_params:
+      measure: acv_amount
+    filter: "{{ Dimension('acv__deal_status') }} = 'won' and {{ Dimension('acv__revenue_category') }} = 'new_logo'"
+
+  - name: won_opportunity_count
+    label: Won Opportunities
+    type: simple
+    type_params:
+      measure: opportunity_count
+    filter: "{{ Dimension('acv__deal_status') }} = 'won'"
+
+  - name: average_deal_acv
+    label: Average Deal ACV (ASP)
+    description: Bookings ACV per won opportunity.
+    type: derived
+    type_params:
+      expr: bookings_acv / nullif(won_opportunity_count, 0)
+      metrics:
+        - name: bookings_acv
+        - name: won_opportunity_count
+
+  # ------------------------------ Usage ---------------------------------
+  - name: total_consumed_value
+    label: Total Consumed Value
+    type: simple
+    type_params:
+      measure: consumed_value
+
+  - name: total_consumed_units
+    label: Total Consumed Units
+    type: simple
+    type_params:
+      measure: consumed_units_total
+
+  - name: total_entitled_units
+    label: Total Entitled Units
+    type: simple
+    type_params:
+      measure: entitled_units_total
+
+  - name: average_utilization
+    label: Average Utilization
+    description: Consumed units / entitled units across active subscriptions.
+    type: ratio
+    type_params:
+      numerator: total_consumed_units
+      denominator: total_entitled_units

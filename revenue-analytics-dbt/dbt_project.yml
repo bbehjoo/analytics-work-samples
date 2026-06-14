@@ -1,0 +1,44 @@
+name: 'grafana_revenue_analytics'
+version: '1.0.0'
+config-version: 2
+
+# This project ships its own profiles.yml (DuckDB) so it runs with no setup.
+profile: 'grafana_revenue_analytics'
+require-dbt-version: [">=1.7.0", "<2.0.0"]
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# ----------------------------------------------------------------------------
+# Layered warehouse: staging (views) -> intermediate (ephemeral) -> marts (tables)
+# A generate_schema_name override (macros/) makes these schema names literal.
+# ----------------------------------------------------------------------------
+models:
+  grafana_revenue_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  grafana_revenue_analytics:
+    +quote_columns: false
+    salesforce:
+      +schema: raw_salesforce
+    netsuite:
+      +schema: raw_netsuite
+    usage:
+      +schema: raw_usage

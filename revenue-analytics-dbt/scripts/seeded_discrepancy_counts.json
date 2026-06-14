@@ -1,0 +1,8 @@
+{
+  "missing_in_netsuite": 8,
+  "amount_mismatch": 15,
+  "timing_difference": 10,
+  "currency_rounding": 6,
+  "partially_invoiced": 12,
+  "orphan_in_netsuite": 5
+}

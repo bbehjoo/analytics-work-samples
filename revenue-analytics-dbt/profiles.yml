@@ -1,0 +1,22 @@
+# Local DuckDB profile — bundled with the project so `dbt build` works with no
+# external warehouse or credentials. The .duckdb file is created on first run and
+# is git-ignored. The SQL is kept BigQuery-portable (ANSI + dbt_utils cross-db
+# macros) so the same models deploy to BigQuery by swapping this profile.
+grafana_revenue_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "grafana.duckdb"
+      schema: main
+      threads: 4
+
+    # Example of the same project pointed at BigQuery (Grafana's warehouse).
+    # Not used locally; shown to illustrate portability.
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT', 'my-gcp-project') }}"
+      dataset: revenue_analytics
+      location: US
+      threads: 4

@@ -1,0 +1,13 @@
+product_id,product_name,product_sku,line_of_business,product_family,product_category,is_recurring,is_active,list_unit_price
+GC-METRICS,Grafana Cloud Metrics,GC-METRICS,Observability,Metrics,Recurring,1,1,18000
+PROM-MGD,Prometheus Managed,PROM-MGD,Observability,Metrics,Recurring,1,1,15000
+GC-LOGS,Grafana Cloud Logs,GC-LOGS,Observability,Logs,Recurring,1,1,22000
+LOKI-ENT,Loki Enterprise,LOKI-ENT,Observability,Logs,Recurring,1,1,30000
+GC-TRACES,Grafana Cloud Traces,GC-TRACES,Observability,Traces,Recurring,1,1,16000
+TEMPO-ENT,Tempo Enterprise,TEMPO-ENT,Observability,Traces,Recurring,1,1,28000
+ONCALL,Grafana OnCall,ONCALL,Incident Response,On-Call,Recurring,1,1,12000
+SLO,Grafana SLO,SLO,Incident Response,SLO,Recurring,1,1,14000
+ENT-STACK,Grafana Enterprise Stack,ENT-STACK,Observability,Platform,Recurring,1,1,95000
+PS-IMPL,Implementation Services,PS-IMPL,Professional Services,Onboarding,One-Time,0,1,25000
+PS-TRAIN,Training Package,PS-TRAIN,Professional Services,Training,One-Time,0,1,8000
+PS-MIGR,Migration Services,PS-MIGR,Professional Services,Migration,One-Time,0,1,18000

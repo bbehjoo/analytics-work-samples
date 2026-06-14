@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: stg_netsuite__customers
+    description: Cleaned NetSuite customers; bridges to Salesforce accounts.
+    columns:
+      - name: ns_customer_id
+        description: Primary key — NetSuite customer id.
+        tests: [unique, not_null]
+      - name: sfdc_account_external_id
+        description: Salesforce account id bridge.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__accounts')
+              field: account_id
+
+  - name: stg_netsuite__items
+    description: Cleaned NetSuite items; bridges to Salesforce products.
+    columns:
+      - name: ns_item_id
+        description: Primary key — NetSuite item id.
+        tests: [unique, not_null]
+
+  - name: stg_netsuite__sales_orders
+    description: Cleaned NetSuite sales order headers.
+    columns:
+      - name: sales_order_id
+        description: Primary key — sales order id.
+        tests: [unique, not_null]
+      - name: ns_customer_id
+        description: FK to customers.
+        tests:
+          - relationships:
+              to: ref('stg_netsuite__customers')
+              field: ns_customer_id
+
+  - name: stg_netsuite__sales_order_lines
+    description: Cleaned NetSuite sales order lines.
+    columns:
+      - name: sales_order_line_id
+        description: Primary key — sales order line id.
+        tests: [unique, not_null]
+      - name: sales_order_id
+        description: FK to sales orders.
+        tests:
+          - relationships:
+              to: ref('stg_netsuite__sales_orders')
+              field: sales_order_id
+
+  - name: stg_netsuite__invoices
+    description: Cleaned NetSuite invoice headers.
+    columns:
+      - name: invoice_id
+        description: Primary key — invoice id.
+        tests: [unique, not_null]
+
+  - name: stg_netsuite__invoice_lines
+    description: Cleaned NetSuite invoice lines.
+    columns:
+      - name: invoice_line_id
+        description: Primary key — invoice line id.
+        tests: [unique, not_null]
+      - name: invoice_id
+        description: FK to invoices.
+        tests:
+          - relationships:
+              to: ref('stg_netsuite__invoices')
+              field: invoice_id

@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: int_opportunity_lines__acv
+    description: Opportunity lines with ACV/TCV math and revenue-category classification. Feeds fct_acv.
+    columns:
+      - name: opportunity_line_id
+        tests: [unique, not_null]
+
+  - name: int_contract_lines__normalized
+    description: Subscription segments enriched with product hierarchy. Feeds the ARR spine and usage entitlement.
+    columns:
+      - name: subscription_id
+        tests: [unique, not_null]
+
+  - name: int_arr__account_product_month
+    description: ARR per account x product x month-end, densified so churn and reactivation are detectable.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [account_id, product_id, measurement_month]
+
+  - name: int_arr__movements
+    description: The ARR waterfall engine — month-over-month movements and revenue categories. Feeds fct_arr.
+    columns:
+      - name: revenue_category
+        tests:
+          - accepted_values:
+              values: ['new_logo', 'cross_sell', 'upsell', 'downgrade', 'churn', 'scheduled']
+
+  - name: int_usage__monthly_rollup
+    description: Monthly usage aligned to the ARR month-end measurement date. Feeds fct_usage.
+
+  - name: int_recon__contract_order_match
+    description: Contract <-> order match with variances and discrepancy categories. Feeds the reconciliation report.

@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_usage__monthly
+    description: Cleaned monthly usage telemetry — consumed units and value per account x product.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [account_id, product_id, usage_month]
+    columns:
+      - name: account_id
+        description: FK to accounts.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__accounts')
+              field: account_id
+      - name: product_id
+        description: FK to products.
+        tests:
+          - relationships:
+              to: ref('stg_salesforce__products')
+              field: product_id
+      - name: usage_month
+        description: First-of-month date of the usage period.
+        tests: [not_null]

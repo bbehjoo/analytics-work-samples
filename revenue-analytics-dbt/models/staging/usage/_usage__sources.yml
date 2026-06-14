@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: usage
+    description: >
+      Product usage / metering telemetry — monthly consumption per account and
+      product. Joined to subscription entitlement downstream to measure utilization,
+      overage, and expansion/churn risk. Emulated by a CSV seed in this sample.
+    schema: raw_usage
+    tables:
+      - name: usage_monthly
+        identifier: usage_monthly
+        description: One row per account x product x month with consumed units and value.

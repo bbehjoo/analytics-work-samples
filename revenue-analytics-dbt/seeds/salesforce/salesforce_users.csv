@@ -1,0 +1,26 @@
+user_id,user_name,sales_team,sales_region,role
+USR-001,Allison Hill,Enterprise,NA,Account Executive
+USR-002,Noah Rhodes,Enterprise,APAC,Account Executive
+USR-003,Angie Henderson,Enterprise,EMEA,Account Executive
+USR-004,Daniel Wagner,Strategic,NA,Account Executive
+USR-005,Cristian Santos,Strategic,NA,Account Executive
+USR-006,Connie Lawrence,Enterprise,LATAM,Account Executive
+USR-007,Abigail Shaffer,Enterprise,NA,Account Executive
+USR-008,Gina Moore,Enterprise,EMEA,Account Executive
+USR-009,Gabrielle Davis,Strategic,NA,Account Executive
+USR-010,Ryan Munoz,Strategic,EMEA,Account Executive
+USR-011,Monica Herrera,Enterprise,LATAM,Account Executive
+USR-012,Jamie Arnold,Strategic,LATAM,Account Executive
+USR-013,Lisa Hensley,Enterprise,APAC,Account Executive
+USR-014,Michele Williams,Strategic,EMEA,Account Executive
+USR-015,Dylan Miller,Commercial,LATAM,Account Executive
+USR-016,Brian Ramirez,Enterprise,APAC,Account Executive
+USR-017,Holly Wood,Commercial,EMEA,Account Executive
+USR-018,Derek Zuniga,Enterprise,NA,Account Executive
+USR-019,Lisa Jackson,Enterprise,LATAM,Account Executive
+USR-020,Carla Gray,Commercial,APAC,Account Executive
+USR-021,Margaret Hawkins DDS,Enterprise,APAC,Account Executive
+USR-022,Patty Perez,Strategic,LATAM,Account Executive
+USR-023,Ethan Adams,Commercial,NA,Account Executive
+USR-024,Tommy Walter,Strategic,NA,Account Executive
+USR-025,Matthew Foster,Strategic,APAC,Account Executive

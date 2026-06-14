@@ -1,0 +1,358 @@
+version: 2
+
+models:
+  # =========================================================================
+  # DIMENSIONS
+  # =========================================================================
+  - name: dim_account
+    description: >
+      Conformed customer dimension — one row per Salesforce account. The single
+      place to slice any revenue fact by firmographics (industry, geo), GTM
+      segmentation (segment, tier, division), the owning rep, or the NetSuite
+      customer bridge. Includes two convenience measures: first_contract_date and
+      current ARR (run-rate at the latest measurement month, 0 if churned).
+    columns:
+      - name: account_key
+        description: Surrogate key for the account (hash of account_id). Join target for fact tables.
+        tests: [unique, not_null]
+      - name: account_id
+        description: Natural Salesforce account id.
+        tests: [unique, not_null]
+      - name: account_name
+        description: Account (company) name.
+      - name: industry
+        description: Account industry (e.g., Technology, Financial Services).
+      - name: billing_country
+        description: Billing country.
+      - name: geo_region
+        description: "Sales geography: NA, EMEA, APAC, or LATAM."
+        tests:
+          - accepted_values:
+              values: ['NA', 'EMEA', 'APAC', 'LATAM']
+      - name: division
+        description: "Account division: Enterprise, Commercial, or Public Sector."
+      - name: segment
+        description: "GTM segment: Enterprise, Mid-Market, or SMB."
+        tests:
+          - accepted_values:
+              values: ['Enterprise', 'Mid-Market', 'SMB']
+      - name: account_tier
+        description: "Tier derived from segment (Tier 1/2/3)."
+      - name: account_currency
+        description: Transacting currency (USD, EUR, GBP).
+      - name: owner_id
+        description: Salesforce user id of the owning rep.
+      - name: account_owner
+        description: Name of the owning rep.
+      - name: sales_region
+        description: The owning rep's sales region.
+      - name: sales_team
+        description: The owning rep's sales team.
+      - name: ns_customer_id
+        description: NetSuite customer id bridged via sfdc_account_external_id.
+      - name: is_customer
+        description: True if the account has ever landed a deal.
+      - name: first_contract_date
+        description: Date of the account's first signed contract (null for prospects).
+      - name: current_arr
+        description: Recurring run-rate at the latest measurement month (0 if churned).
+
+  - name: dim_product
+    description: >
+      Conformed product dimension with the line-of-business / family hierarchy and
+      recurring-vs-one-time classification, plus the NetSuite item bridge.
+    columns:
+      - name: product_key
+        description: Surrogate key for the product (hash of product_id).
+        tests: [unique, not_null]
+      - name: product_id
+        description: Natural Salesforce product id (SKU).
+        tests: [unique, not_null]
+      - name: product_name
+        description: Product display name.
+      - name: product_sku
+        description: Product SKU.
+      - name: line_of_business
+        description: "Top of the product hierarchy: Observability, Incident Response, or Professional Services."
+      - name: product_family
+        description: "Mid level of the hierarchy (e.g., Metrics, Logs, Traces)."
+      - name: product_category
+        description: "Recurring or One-Time."
+      - name: is_recurring
+        description: True for subscription (ARR-eligible) products; false for one-time fees.
+        tests: [not_null]
+      - name: is_active
+        description: Whether the product is currently sellable.
+      - name: list_unit_price
+        description: Annual list price per unit (recurring) or fee (one-time).
+      - name: ns_item_id
+        description: NetSuite item id bridged via sfdc_product_external_id.
+
+  - name: dim_sales_rep
+    description: Sales rep dimension (Salesforce users), with team and region for territory analysis.
+    columns:
+      - name: sales_rep_key
+        description: Surrogate key for the rep (hash of user_id).
+        tests: [unique, not_null]
+      - name: user_id
+        description: Natural Salesforce user id.
+        tests: [unique, not_null]
+      - name: sales_rep_name
+        description: Rep name.
+      - name: sales_team
+        description: "Sales team: Enterprise, Commercial, or Strategic."
+      - name: sales_region
+        description: "Rep's region: NA, EMEA, APAC, LATAM."
+
+  # =========================================================================
+  # FACTS
+  # =========================================================================
+  - name: fct_acv
+    description: >
+      Annual Contract Value — the sales-performance & pipeline fact, at
+      opportunity-line grain (open pipeline + closed deals). `acv` = average
+      annual recurring + frontloaded (full) one-time; `tcv` = total contract value.
+      Includes one-time fees (unlike ARR). Filter is_closed_won for bookings,
+      not is_closed for pipeline. Each line carries a revenue_category for motion
+      and win/loss analysis. Time grain = close_date / sales_year.
+    columns:
+      - name: acv_key
+        description: Surrogate key (hash of opportunity_line_id).
+        tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        tests:
+          - relationships:
+              to: ref('dim_account')
+              field: account_key
+      - name: product_key
+        description: FK to dim_product.
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: product_key
+      - name: sales_rep_key
+        description: FK to dim_sales_rep (opportunity owner).
+        tests:
+          - relationships:
+              to: ref('dim_sales_rep')
+              field: sales_rep_key
+      - name: opportunity_line_id
+        description: Natural Salesforce opportunity line id.
+        tests: [unique, not_null]
+      - name: opportunity_id
+        description: Parent opportunity id.
+      - name: opportunity_owner
+        description: Name of the opportunity owner.
+      - name: sales_region
+        description: Owner's sales region (denormalized for convenience).
+      - name: opportunity_type
+        description: "New Business, Expansion, Renewal, Downgrade, or Churn."
+      - name: stage_name
+        description: Sales stage (open stages or Closed Won / Closed Lost).
+      - name: forecast_category
+        description: "Pipeline, Best Case, Commit, Closed, or Omitted."
+      - name: revenue_category
+        description: "Motion: new_logo, cross_sell, upsell, downgrade, scheduled (renewal), or churn."
+        tests:
+          - accepted_values:
+              values: ['new_logo', 'cross_sell', 'upsell', 'downgrade', 'scheduled', 'churn']
+      - name: is_closed
+        description: Whether the opportunity is closed.
+      - name: is_won
+        description: Whether the opportunity is won.
+      - name: is_closed_won
+        description: True for booked deals (closed and won). Filter for bookings.
+        tests: [not_null]
+      - name: close_date
+        description: Close date (actual for closed, expected for pipeline).
+      - name: sales_year
+        description: Calendar year of close_date — the sales-performance time grain.
+      - name: term_months
+        description: Contract term for the line, in months.
+      - name: is_recurring
+        description: True for subscription products; false for one-time fees.
+      - name: quantity
+        description: Units sold on the line (negative for downgrades).
+      - name: annual_recurring_amount
+        description: Annual recurring portion of the line (0 for one-time).
+      - name: one_time_amount
+        description: One-time fee portion of the line (0 for recurring).
+      - name: acv
+        description: Annual Contract Value = annual_recurring_amount + one_time_amount.
+      - name: tcv
+        description: Total Contract Value = recurring annual x term-years (+ one-time in full).
+
+  - name: fct_arr
+    description: >
+      Annual Recurring Revenue — the recurring run-rate fact and ARR waterfall, at
+      account x product x month-end measurement date. `ending_arr` is the run-rate
+      on the measurement date; the signed movement columns sum to the change from
+      `beginning_arr`, so a company ARR bridge is a roll-up by month. Recurring
+      only (no one-time fees). NRR/GRR are derived from the movement columns.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [account_id, product_id, measurement_month]
+    columns:
+      - name: arr_key
+        description: Surrogate key (hash of account_id, product_id, measurement_month).
+        tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        tests:
+          - relationships:
+              to: ref('dim_account')
+              field: account_key
+      - name: product_key
+        description: FK to dim_product.
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: product_key
+      - name: account_id
+        description: Natural account id.
+      - name: product_id
+        description: Natural product id.
+      - name: measurement_month
+        description: Month-end measurement date; ARR is stated as of this date.
+        tests: [not_null]
+      - name: revenue_category
+        description: "MoM movement: new_logo, cross_sell, upsell, downgrade, churn, or scheduled."
+        tests:
+          - accepted_values:
+              values: ['new_logo', 'cross_sell', 'upsell', 'downgrade', 'churn', 'scheduled']
+      - name: beginning_arr
+        description: ARR run-rate in the prior month (0 if new).
+      - name: ending_arr
+        description: ARR run-rate on the measurement date.
+      - name: arr_change
+        description: ending_arr - beginning_arr (net new ARR for the row).
+      - name: entitled_units
+        description: Subscribed units in force that month (entitlement for usage).
+      - name: new_logo_arr
+        description: ARR added from a net-new account landing (incl. win-back).
+      - name: cross_sell_arr
+        description: ARR added from selling a new product to an existing account.
+      - name: upsell_arr
+        description: ARR added from expanding an existing product.
+      - name: downgrade_arr
+        description: ARR lost from reducing an existing product (negative).
+      - name: churn_arr
+        description: ARR lost when a product/account fully lapses (negative).
+      - name: scheduled_arr
+        description: Continuing (unchanged) ARR run-rate carried this month.
+
+  - name: fct_usage
+    description: >
+      Consumption vs entitlement, at account x product x month (months with active
+      entitlement). Joins usage telemetry to the subscription in force that month
+      so consumption can be compared to what the customer pays for. utilization_pct
+      > 1 signals overage / expansion; low utilization signals downsell / churn risk.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [account_id, product_id, usage_month]
+    columns:
+      - name: usage_key
+        description: Surrogate key (hash of account_id, product_id, usage_month).
+        tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        tests:
+          - relationships:
+              to: ref('dim_account')
+              field: account_key
+      - name: product_key
+        description: FK to dim_product.
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: product_key
+      - name: account_id
+        description: Natural account id.
+      - name: product_id
+        description: Natural product id.
+      - name: usage_month
+        description: Month-end date, aligned to the ARR measurement date.
+      - name: consumed_units
+        description: Units consumed in the month.
+      - name: consumed_value
+        description: Approximate value of consumption in the month.
+      - name: entitled_units
+        description: Units the customer is entitled to (from the active subscription).
+      - name: entitled_arr
+        description: ARR of the active subscription that month.
+      - name: utilization_pct
+        description: consumed_units / entitled_units. > 1 = overage.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: overage_units
+        description: Units consumed above entitlement (0 if none).
+      - name: is_over_entitlement
+        description: True when consumption exceeds entitlement (expansion signal).
+      - name: is_under_utilized
+        description: True when consumption is below 50% of entitlement (churn risk).
+
+  - name: rpt_contract_to_netsuite_recon
+    description: >
+      Salesforce <-> NetSuite reconciliation report — one row per contract<->order
+      pair plus each side's unmatched rows. Surfaces where CRM and ERP disagree,
+      with a match_status and a discrepancy_category so finance can quantify "$ at
+      risk by category" and drill to the underlying IDs.
+    columns:
+      - name: recon_key
+        description: Surrogate key (hash of contract_id + sales_order_id).
+        tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account (from the contract, or the order's customer for orphans).
+        tests:
+          - relationships:
+              to: ref('dim_account')
+              field: account_key
+      - name: account_id
+        description: Natural account id.
+      - name: contract_id
+        description: Salesforce contract id (null for orphan NetSuite orders).
+      - name: contract_number
+        description: Human-readable contract number.
+      - name: external_order_ref
+        description: The key used to match a contract to a NetSuite order.
+      - name: sales_order_id
+        description: NetSuite sales order id (null for contracts missing in NetSuite).
+      - name: order_number
+        description: Human-readable order number.
+      - name: contract_start_date
+        description: Contract start date.
+      - name: order_date
+        description: NetSuite order date.
+      - name: sfdc_contract_amount
+        description: Total contract value in Salesforce.
+      - name: ns_order_amount
+        description: Order total in NetSuite.
+      - name: ns_invoice_amount
+        description: Sum of invoices against the order (billed amount).
+      - name: amount_variance
+        description: sfdc_contract_amount - ns_order_amount.
+      - name: amount_variance_pct
+        description: amount_variance as a fraction of the contract amount.
+      - name: date_variance_days
+        description: Days between contract start and order date.
+      - name: currency_variance
+        description: True if the contract and order currencies differ.
+      - name: invoice_coverage_pct
+        description: ns_invoice_amount / ns_order_amount (billed vs ordered).
+      - name: match_status
+        description: "matched, variance, unmatched_sfdc, or unmatched_netsuite."
+        tests:
+          - accepted_values:
+              values: ['matched', 'variance', 'unmatched_sfdc', 'unmatched_netsuite']
+      - name: discrepancy_category
+        description: >
+          matched_clean, amount_mismatch, currency_rounding, partially_invoiced,
+          timing_difference, missing_in_netsuite, or orphan_in_netsuite.
+        tests:
+          - accepted_values:
+              values:
+                ['matched_clean', 'amount_mismatch', 'currency_rounding',
+                 'partially_invoiced', 'timing_difference',
+                 'missing_in_netsuite', 'orphan_in_netsuite']
