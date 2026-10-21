@@ -1,5 +1,7 @@
 # Data Leadership Work Samples · Behrang Behjoo
 
+[![build](https://github.com/bbehjoo/analytics-work-samples/actions/workflows/ci.yml/badge.svg)](https://github.com/bbehjoo/analytics-work-samples/actions/workflows/ci.yml)
+
 **One B2B SaaS company's data, end to end:** the revenue numbers, the people data,
 and the rules for who gets to see what. Modeled, tested, governed and explained in
 one repo. Everything here is synthetic or my own published work; nothing proprietary.

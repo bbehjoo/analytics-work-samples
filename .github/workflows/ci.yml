@@ -1,0 +1,37 @@
+name: build
+
+# Every push rebuilds the whole platform from the committed seeds, runs every
+# data and proof test, then checks ownership and classification. A red badge
+# means a number stopped reconciling or personal data stopped being protected.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: saas-data-platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: saas-data-platform/requirements.txt
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Build and test (models, data tests, proof tests)
+        run: dbt build
+
+      - name: Governance check (owners, classification, proof tests)
+        run: python scripts/check_governance.py
