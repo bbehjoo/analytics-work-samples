@@ -1,43 +1,36 @@
-<section class="hero">
-  <div class="wrap">
-    <div class="eyebrow">Work samples · B2B SaaS · all data synthetic</div>
-    <h1><span class="line">Every number <span class="blue">reconciles.</span></span> <span class="line">Every column <span class="red">has a rule.</span></span></h1>
-    <p class="lede">One B2B SaaS company's data, end to end. The revenue numbers, the people data, and the rules for who gets to see what. Modeled, tested, governed and explained in one repo.</p>
-    <div class="ctas">
-      <a class="btn primary" href="#who">See who sees what</a>
-      <a class="btn" href="revenue.html">Revenue review</a>
-      <a class="btn" href="people.html">People review</a>
-      <a class="btn" href="architecture.html">How it's built</a>
-      <a class="btn" href="{{repo}}">The code</a>
-    </div>
+<div class="rwrap">
+  <span class="pill">Work samples · B2B SaaS · all data synthetic</span>
+  <h1 class="rh1">Every number <span class="hl-b">reconciles.</span> Every column <span class="hl-r">has a rule.</span></h1>
+  <div class="rsub">One B2B SaaS company's data, end to end: the revenue numbers, the people data, and the rules for who gets to see what. Modeled, tested, governed and explained in one repo.</div>
+  <div class="ctas">
+    <a class="btn primary" href="#who">See who sees what</a>
+    <a class="btn" href="revenue.html">Revenue review</a>
+    <a class="btn" href="people.html">People review</a>
+    <a class="btn" href="architecture.html">How it's built</a>
+    <a class="btn" href="{{repo}}">The code</a>
   </div>
-</section>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat blue"><div class="v">{{build_passed}}/{{build_total}}</div><div class="l">models and tests passing on every build, in CI</div></div>
-    <div class="stat ink"><div class="v">{{proof_count}}</div><div class="l">proof tests: the books reconcile, quotes tie out, nothing personal leaks</div></div>
-    <div class="stat green"><div class="v">{{pii_leaks}}</div><div class="l">PII leaks, proven by {{gov_test_count}} of those tests</div></div>
-    <div class="stat red"><div class="v">{{owned_pct}}</div><div class="l">of {{models}} models with a named owner and classified columns</div></div>
+  <div class="kpis four">
+    <div class="kpi"><div class="v">{{build_passed}}/{{build_total}}</div><div class="l">Checks passing</div><div class="s">models and tests, every build, in CI</div></div>
+    <div class="kpi"><div class="v">{{proof_count}}</div><div class="l">Proof tests</div><div class="s">books reconcile, quotes tie out, nothing leaks</div></div>
+    <div class="kpi"><div class="v">{{pii_leaks}}</div><div class="l">PII leaks</div><div class="s">proven by {{gov_test_count}} of those tests</div></div>
+    <div class="kpi"><div class="v">{{owned_pct}}</div><div class="l">Models owned</div><div class="s">{{models}} models, each with a named owner</div></div>
   </div>
-</div>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">The whole stack</div>
-    <h2>Four sources in. Five kinds of people out. Rules in between.</h2>
-    <p class="section-lede">Every column is tagged where it enters the warehouse. The tag decides what each person, and each AI agent, can see.</p>
+  <div class="card">
+    <h2>The whole stack — four sources in, five kinds of people out, rules in between</h2>
+    <div class="src">Every column is tagged where it enters the warehouse · the tag decides what each person, and each AI agent, can see</div>
     <div class="flow">
       <div class="col">
         <h3>Sources</h3>
-        <div class="chip"><i class="dot confidential"></i><div>Salesforce<small>CRM: accounts, deals</small></div></div>
+        <div class="chip"><i class="dot confidential"></i><div>Salesforce<small>CRM + CPQ: accounts, deals, quotes</small></div></div>
         <div class="chip"><i class="dot confidential"></i><div>NetSuite<small>ERP: orders, invoices</small></div></div>
         <div class="chip"><i class="dot"></i><div>Product usage<small>consumption by month</small></div></div>
         <div class="chip"><i class="dot restricted"></i><div>HRIS<small>people, pay, leave</small></div></div>
       </div>
       <div class="col">
         <h3>Models</h3>
-        <div class="chip"><i class="dot confidential"></i><div>Revenue marts<small>ARR, bookings, reconciliation</small></div></div>
+        <div class="chip"><i class="dot confidential"></i><div>Revenue marts<small>ARR, bookings, pricing, reconciliation</small></div></div>
         <div class="chip"><i class="dot restricted"></i><div>People marts<small>headcount, attrition, pay equity</small></div></div>
         <div class="chip"><i class="dot"></i><div>Semantic layer<small>{{metric_count}} metrics, defined once</small></div></div>
       </div>
@@ -59,40 +52,34 @@
     </div>
     <div class="legend" aria-label="Sensitivity classes">
       <span><i class="dot"></i><b>Internal</b> product, usage</span>
-      <span><i class="dot confidential"></i><b>Confidential</b> customer revenue</span>
+      <span><i class="dot confidential"></i><b>Confidential</b> customer revenue, pricing</span>
       <span><i class="dot pii"></i><b>PII</b> names, emails, birth dates</span>
       <span><i class="dot restricted"></i><b>Restricted</b> pay, health, demographics</span>
     </div>
     <a class="more" href="architecture.html">See every model, its lineage and the ERDs</a>
   </div>
-</section>
 
-{{who_block}}
+  {{who_block}}
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">What's inside</div>
-    <h2>Four ways in.</h2>
-    <p class="section-lede">Two business reviews built on the models, and two pages on how the platform itself is built and governed.</p>
+  <div class="card">
+    <h2>What's inside — four ways in</h2>
+    <div class="src">Two business reviews built on the models, and two pages on how the platform itself is built and governed</div>
     <div class="tiles">
-      <a class="tile" href="architecture.html"><span class="v blue">How it's built</span><p>Every model from raw table to report: tap any one to trace its lineage. The layers, the ERDs, and the tests at each step.</p><span class="go">Lineage &amp; ERDs →</span></a>
-      <a class="tile" href="access.html"><span class="v red">Who sees what</span><p>One policy file, five roles, and the proof tests that show nothing personal leaks. Every table and its owner.</p><span class="go">Governance →</span></a>
-      <a class="tile" href="revenue.html"><span class="v">Revenue review</span><p>The ARR waterfall, bookings, usage against entitlement, and the CRM-to-ERP reconciliation.</p><span class="go">Business review →</span></a>
+      <a class="tile" href="architecture.html"><span class="v">How it's built</span><p>Every model from raw table to report: tap any one to trace its lineage. The layers, the ERDs, and the tests at each step.</p><span class="go">Lineage &amp; ERDs →</span></a>
+      <a class="tile" href="access.html"><span class="v">Who sees what</span><p>One policy file, five roles, and the proof tests that show nothing personal leaks. Every table and its owner.</p><span class="go">Governance →</span></a>
+      <a class="tile" href="revenue.html"><span class="v">Revenue review</span><p>The ARR waterfall, bookings, usage, pricing and discount approvals, and quote to cash.</p><span class="go">Business review →</span></a>
       <a class="tile" href="people.html"><span class="v">People review</span><p>ARR per employee, attrition and pay equity, built from aggregates only.</p><span class="go">Business review →</span></a>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">How I run data</div>
-    <h2>Five rules, each with a receipt in the code.</h2>
+  <div class="card">
+    <h2>How I run data — five rules, each with a receipt in the code</h2>
     <div class="prins">
-      <div class="prin"><h3>One number, one definition</h3><p>ARR, NRR and {{metric_count}} metrics are defined once, so every dashboard and every AI agent gets the same answer.</p><a href="{{gh}}/saas-data-platform/models/semantic/metrics.yml">models/semantic/metrics.yml</a></div>
-      <div class="prin"><h3>The numbers reconcile</h3><p>The ARR waterfall balances to the cent, and every CRM contract is matched to its ERP order.</p><a href="{{gh}}/saas-data-platform/tests/assert_arr_waterfall_integrity.sql">tests/assert_arr_waterfall_integrity.sql</a></div>
+      <div class="prin"><h3>One number, one definition</h3><p>All {{metric_count}} metrics, from ARR and NRR to discount and win rate, are defined once, so every dashboard and every AI agent gets the same answer.</p><a href="{{gh}}/saas-data-platform/models/semantic/metrics.yml">models/semantic/metrics.yml</a></div>
+      <div class="prin"><h3>The numbers reconcile</h3><p>The ARR waterfall balances to the cent, quotes tie to bookings, and every CRM contract is matched to its ERP order.</p><a href="{{gh}}/saas-data-platform/tests/assert_arr_waterfall_integrity.sql">tests/assert_arr_waterfall_integrity.sql</a></div>
       <div class="prin"><h3>Private by default</h3><p>Every column about a person is classified. Pay, health and gender never reach analysts or AI agents, and tests prove it.</p><a href="{{gh}}/saas-data-platform/seeds/governance/access_policy.csv">seeds/governance/access_policy.csv</a></div>
       <div class="prin"><h3>Every table has an owner</h3><p>Every model belongs to a named team. Certified tables have enforced contracts. The build fails if either slips.</p><a href="{{gh}}/saas-data-platform/scripts/check_governance.py">scripts/check_governance.py</a></div>
       <div class="prin"><h3>Every chart ends in a decision</h3><p>Each finding says what it is, why it matters and what to do next.</p><a href="{{repo}}/tree/main/saas-data-platform/reports">saas-data-platform/reports/</a></div>
     </div>
   </div>
-</section>
+</div>

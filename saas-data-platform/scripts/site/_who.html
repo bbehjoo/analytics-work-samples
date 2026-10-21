@@ -1,30 +1,27 @@
-<section class="dark wsw" id="who">
-  <div class="wrap">
-    <div class="eyebrow">Who sees what</div>
-    <h2>Same table. Five people. Five different answers.</h2>
-    <p class="section-lede">Tap a role. Every row below is what that role's own view in the warehouse returns, generated from one policy file. Four tests prove nothing leaks.</p>
-    <div class="roles" role="group" aria-label="View as"></div>
-    <div class="summary"><span class="big"></span><span class="what"></span></div>
-    <div class="rules"></div>
-    <div class="tablebox"><table class="people"><thead></thead><tbody></tbody></table></div>
-    <div class="ai" hidden>
-      <div class="panel">
-        <h4>Headcount by department</h4>
-        <div class="src">secure_ai_agent.department_summary</div>
-        <div class="ai-bars"></div>
-      </div>
-      <div class="panel">
-        <h4>Asking the AI agent</h4>
-        <div class="src">answers come from governed aggregates, never rows</div>
-        <div class="chat"></div>
-      </div>
+<div class="card wsw" id="who">
+  <h2>Who sees what — same table, five people, five different answers</h2>
+  <div class="src">Tap a role. Every row is what that role's own view in the warehouse returns, generated from one policy file · four proof tests show nothing leaks</div>
+  <div class="roles" role="group" aria-label="View as"></div>
+  <div class="summary"><span class="big"></span><span class="what"></span></div>
+  <div class="rules"></div>
+  <div class="tablebox"><table class="people"><thead></thead><tbody></tbody></table></div>
+  <div class="ai" hidden>
+    <div class="panel">
+      <h4>Headcount by department</h4>
+      <div class="src">secure_ai_agent.department_summary</div>
+      <div class="ai-bars"></div>
     </div>
-    <div class="keys">
-      <span><span class="tx">a•••@saasco.com</span> masked or pseudonymized</span>
-      <span><span class="tx band">$100-120k</span> banded</span>
-      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>not in this role's view at all</span>
+    <div class="panel">
+      <h4>Asking the AI agent</h4>
+      <div class="src">answers come from governed aggregates, never rows</div>
+      <div class="chat"></div>
     </div>
-    <div class="proofs">{{gov_proofs}}</div>
-    {{who_more}}
   </div>
-</section>
+  <div class="keys">
+    <span><span class="tx">a•••@saasco.com</span> masked or pseudonymized</span>
+    <span><span class="tx band">$100-120k</span> banded</span>
+    <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>not in this role's view at all</span>
+  </div>
+  <div class="proofs">{{gov_proofs}}</div>
+  {{who_more}}
+</div>

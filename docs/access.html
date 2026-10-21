@@ -272,7 +272,8 @@ details.build .diagram{margin:0;border:0;border-top:1px solid var(--line)}
 /* ---- report pages: a business review, in cards ---- */
 body.report{background:#eef2f6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --ink:#16222e; --muted:#5b6b7b; --line:#e2e8f0; --tint:#f1f4f8; --navy:#12395b;
-  --blue:#2f6db0; --red:#c0492b; --green:#1f9d8f; --yellow:#d99a2b; --gray:#9fb0c0; --display:inherit}
+  --blue:#2f6db0; --red:#c0492b; --green:#1f9d8f; --yellow:#d99a2b; --gray:#9fb0c0;
+  --display:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .report .nav{background:#fff}
 .report .nav nav a[aria-current="page"]{border-color:var(--blue)}
 .rwrap{max-width:1080px;margin:0 auto;padding-block:32px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -314,6 +315,86 @@ body.report{background:#eef2f6;font-family:-apple-system,BlinkMacSystemFont,"Seg
 .mini span{font-size:12.5px;color:var(--muted)}
 .report footer{background:#fff}
 
+/* ---- the same professional theme for the overview, governance and lineage pages ---- */
+body.report{--c-int:#9fb0c0; --c-conf:#2f6db0; --c-pii:#d99a2b; --c-res:#c0492b}
+.rh1 .hl-b{color:var(--blue)} .rh1 .hl-r{color:var(--red)}
+.kpis.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:820px){.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.report .ctas{margin-top:16px;gap:8px}
+.report .btn{font-family:inherit;font-weight:600;font-size:14px;padding:9px 14px;border:1px solid #cdd6e1;border-radius:8px;background:#fff;color:var(--navy)}
+.report .btn:hover{border-color:var(--navy);background:#fff}
+.report .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.report .btn.primary:hover{background:#0e2d48}
+.report .more{font-size:14px;font-weight:600;color:var(--blue);border-bottom-width:1px;margin-top:16px}
+.report .card > .src a{color:var(--blue)}
+.report .flow{margin-top:6px;gap:26px}
+.report .col h3,.report .lcol h3{font-family:inherit;font-size:11.5px;font-weight:700;letter-spacing:.05em;color:var(--muted)}
+.report .col:not(:last-child)::after{color:#9fb0c0}
+.report .chip{border-radius:8px;font-size:14px;font-weight:600;background:#fff}
+.report .chip small{font-size:12.5px}
+.report .chip.guard{background:var(--navy);border-color:var(--navy)}
+.report .chip svg{color:#f2c46d}
+.report .legend{font-size:13px;margin-top:18px}
+.report .tiles{border:0;gap:12px;margin-top:4px}
+.report .tile{border:1px solid var(--line);border-radius:10px;background:#fff;padding:16px 18px}
+.report a.tile:hover{border-color:var(--navy);background:#fff}
+.report .tile .v{font-size:18px;letter-spacing:-.2px;line-height:1.25;color:var(--navy)}
+.report .tile p{font-size:14px;line-height:1.5}
+.report .tile .go{font-family:inherit;font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.02em;text-transform:none}
+.report .prins{margin-top:2px;border-top:0}
+.report .prin{padding:14px 0}
+.report .prin:last-child{border-bottom:0}
+.report .prin h3{font-size:15.5px}
+.report .prin p{font-size:14.5px}
+.report .prin a{font-size:12.5px;color:var(--blue)}
+.report .tbl{border-radius:10px;margin-top:12px}
+.report .tbl th{font-family:inherit;font-weight:700;font-size:11.5px;background:var(--tint)}
+.report .tbl td{font-size:14px}
+.report .tbl a{color:var(--blue)}
+.report .t{border-radius:4px;font-size:12px;font-family:inherit;font-weight:600}
+.report .t.full{background:var(--navy)}
+.report .t.mask,.report .t.pseudonymize,.report .t.band,.report .t.flag{background:#fdf1d8}
+.report .ok{color:var(--green)}
+.report .linfo{border:1px solid var(--line);border-radius:10px;background:var(--tint)}
+.report .linfo .nm{font-size:16px}
+.report .ln{border-radius:4px}
+.report .ln.people{border-left-color:var(--red)}
+.report .ln{border-left-color:var(--blue)}
+.report .ln.up,.report .ln.down{background:#e8f0fa}
+.report .ln.people.up,.report .ln.people.down{background:#f9e8e3}
+.report .ln.sel{background:var(--navy)!important;border-color:var(--navy)}
+.report .diagram{border-radius:10px;margin-top:4px}
+.report details.build{border-radius:10px;background:#fff}
+.report details.build summary{font-size:15px}
+/* who sees what, light */
+.report .roles{margin:12px 0}
+.report .roles button{font-family:inherit;font-weight:600;font-size:14px;color:var(--navy);background:#fff;border:1px solid #cdd6e1;border-radius:999px;padding:7px 14px}
+.report .roles button:hover{border-color:var(--navy)}
+.report .roles button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.report .summary .big{font-size:20px;color:var(--navy);letter-spacing:-.2px}
+.report .summary .what{color:var(--muted);font-size:14.5px}
+.report .rule{font-family:inherit;color:var(--muted);border-color:var(--line);border-radius:4px}
+.report .rule.full{color:var(--ink);border-color:#c9d3df}
+.report .rule.mask,.report .rule.pseudonymize,.report .rule.band,.report .rule.flag{color:#7a5200;border-color:#ecd3a0;background:#fdf6e7}
+.report .tablebox{background:#fff;border:1px solid var(--line);border-radius:10px}
+.report table.people th{color:var(--muted);border-color:var(--line);font-family:inherit;font-weight:700}
+.report table.people td{border-color:var(--line);color:var(--ink)}
+.report .tx{background:#fdf1d8;color:var(--ink);border-radius:4px}
+.report .tx.band{background:#fff;border:1px solid #e3b4a6}
+.report .none,.report .lock{color:var(--muted)}
+.report td.locked{background:repeating-linear-gradient(135deg,transparent 0 6px,#e9eef4 6px 7px)}
+.report .keys{color:var(--muted)}
+.report .panel{background:var(--tint);border:1px solid var(--line);border-radius:10px}
+.report .panel .src{color:var(--muted);font-family:inherit}
+.report .q{background:var(--navy);color:#fff;border-radius:10px}
+.report .a{background:#fff;border:1px solid var(--line);border-radius:10px}
+.report .a.ok .why{color:var(--green)} .report .a.no .why{color:var(--red)}
+.report .proof{background:var(--tint);border:1px solid var(--line);border-radius:10px;color:var(--ink)}
+.report .proof svg{color:var(--green)}
+.report .proof code{color:var(--muted)}
+.report .wsw .bar .track{background:#e9eef4}
+.report .wsw .bar .fill{background:var(--blue)}
+
 /* ---- footer ---- */
 footer{border-top:1px solid var(--line);margin-top:30px}
 footer .wrap{padding-block:26px 40px;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:13.5px;color:var(--muted)}
@@ -321,7 +402,7 @@ footer a{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
-<body class="">
+<body class="report">
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="index.html">Behrang Behjoo · Data leadership</a>
@@ -329,60 +410,50 @@ footer a{color:var(--ink)}
   </div>
 </header>
 <main>
-<section class="hero page">
-  <div class="wrap">
-    <div class="eyebrow">Governance · who sees what</div>
-    <h1><span class="line">Private by <span class="blue">default.</span></span> <span class="line">Proven on <span class="red">every build.</span></span></h1>
-    <p class="lede">Every column that describes a person is classified where it enters the warehouse. One policy file decides what each role sees. The build fails if anything leaks.</p>
-  </div>
-</section>
+<div class="rwrap">
+  <span class="pill">Governance · column classification · role-scoped access</span>
+  <h1 class="rh1">Who Sees What — private by <span class="hl-b">default</span>, proven on <span class="hl-r">every build</span></h1>
+  <div class="rsub">Every column that describes a person is classified where it enters the warehouse. One policy file decides what each role sees. The build fails if anything leaks.</div>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat blue"><div class="v">87</div><div class="l">columns classified as internal, confidential, PII or restricted</div></div>
-    <div class="stat ink"><div class="v">5 roles</div><div class="l">governed by one policy file</div></div>
-    <div class="stat green"><div class="v">11 of 11</div><div class="l">proof tests passing on every build</div></div>
-    <div class="stat red"><div class="v">54 of 54</div><div class="l">models with a named owner</div></div>
+  <div class="kpis four">
+    <div class="kpi"><div class="v">87</div><div class="l">Columns classified</div><div class="s">internal, confidential, PII or restricted</div></div>
+    <div class="kpi"><div class="v">5</div><div class="l">Roles</div><div class="s">governed by one policy file</div></div>
+    <div class="kpi"><div class="v">11 of 11</div><div class="l">Proof tests passing</div><div class="s">on every build, in CI</div></div>
+    <div class="kpi"><div class="v">54 of 54</div><div class="l">Models owned</div><div class="s">each with a named owner</div></div>
   </div>
+
+  <div class="card wsw" id="who">
+  <h2>Who sees what — same table, five people, five different answers</h2>
+  <div class="src">Tap a role. Every row is what that role's own view in the warehouse returns, generated from one policy file · four proof tests show nothing leaks</div>
+  <div class="roles" role="group" aria-label="View as"></div>
+  <div class="summary"><span class="big"></span><span class="what"></span></div>
+  <div class="rules"></div>
+  <div class="tablebox"><table class="people"><thead></thead><tbody></tbody></table></div>
+  <div class="ai" hidden>
+    <div class="panel">
+      <h4>Headcount by department</h4>
+      <div class="src">secure_ai_agent.department_summary</div>
+      <div class="ai-bars"></div>
+    </div>
+    <div class="panel">
+      <h4>Asking the AI agent</h4>
+      <div class="src">answers come from governed aggregates, never rows</div>
+      <div class="chat"></div>
+    </div>
+  </div>
+  <div class="keys">
+    <span><span class="tx">a•••@saasco.com</span> masked or pseudonymized</span>
+    <span><span class="tx band">$100-120k</span> banded</span>
+    <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>not in this role's view at all</span>
+  </div>
+  <div class="proofs"><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>No masked value matches the original, and hidden columns are really gone<code>assert_no_pii_leaks</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>Pay, health and gender never reach analysts or the AI agent<code>assert_restricted_never_reaches_analyst_or_ai</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>The EMEA manager&#x27;s view holds exactly their EMEA sales team<code>assert_row_filters_hold</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>No number is shown for a group under 5<code>assert_small_groups_suppressed</code></div></div></div>
+  
 </div>
 
-<section class="dark wsw" id="who">
-  <div class="wrap">
-    <div class="eyebrow">Who sees what</div>
-    <h2>Same table. Five people. Five different answers.</h2>
-    <p class="section-lede">Tap a role. Every row below is what that role's own view in the warehouse returns, generated from one policy file. Four tests prove nothing leaks.</p>
-    <div class="roles" role="group" aria-label="View as"></div>
-    <div class="summary"><span class="big"></span><span class="what"></span></div>
-    <div class="rules"></div>
-    <div class="tablebox"><table class="people"><thead></thead><tbody></tbody></table></div>
-    <div class="ai" hidden>
-      <div class="panel">
-        <h4>Headcount by department</h4>
-        <div class="src">secure_ai_agent.department_summary</div>
-        <div class="ai-bars"></div>
-      </div>
-      <div class="panel">
-        <h4>Asking the AI agent</h4>
-        <div class="src">answers come from governed aggregates, never rows</div>
-        <div class="chat"></div>
-      </div>
-    </div>
-    <div class="keys">
-      <span><span class="tx">a•••@saasco.com</span> masked or pseudonymized</span>
-      <span><span class="tx band">$100-120k</span> banded</span>
-      <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>not in this role's view at all</span>
-    </div>
-    <div class="proofs"><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>No masked value matches the original, and hidden columns are really gone<code>assert_no_pii_leaks</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>Pay, health and gender never reach analysts or the AI agent<code>assert_restricted_never_reaches_analyst_or_ai</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>The EMEA manager&#x27;s view holds exactly their EMEA sales team<code>assert_row_filters_hold</code></div></div><div class="proof"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><div>No number is shown for a group under 5<code>assert_small_groups_suppressed</code></div></div></div>
-    
-  </div>
-</section>
 
-
-<section id="policy">
-  <div class="wrap">
-    <div class="eyebrow">The policy</div>
-    <h2>One file decides what each role sees.</h2>
-    <p class="section-lede">Each row is a category of column. Each cell is what that role gets. The secure views are generated from this file, and the tests read it too. <a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/seeds/governance/access_policy.csv">access_policy.csv</a></p>
+  <div class="card" id="policy">
+    <h2>The policy — one file decides what each role sees</h2>
+    <div class="src">Each row is a category of column; each cell is what that role gets · the secure views are generated from <a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/seeds/governance/access_policy.csv">access_policy.csv</a>, and the tests read it too</div>
     <div class="tbl"><table><thead><tr><th>Category</th><th>Class</th><th>HR partner</th><th>Finance</th><th>Sales manager, EMEA</th><th>Analyst</th><th>AI agent</th></tr></thead><tbody><tr><td><b>Identity</b><small>name, employee id, manager id</small></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t pseudonymize">pseudonymize</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t pseudonymize">pseudonymize</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Work contact</b><small>work email</small></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t mask">mask</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t mask">mask</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Personal</b><small>personal email, home postal code, birth date</small></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t band">band</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Org</b><small>department, title, region</small></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Employment</b><small>level, hire and exit dates, pay band midpoint</small></td><td class="nowrap"><span class="sens"><i class="dot confidential"></i>confidential</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Comp</b><small>base pay, bonus, equity, compa-ratio</small></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t band">band</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Health</b><small>leave type</small></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t flag">flag</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr><tr><td><b>Demographic</b><small>gender</small></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td class="nowrap"><span class="t full">full</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t hide">hide</span></td><td class="nowrap"><span class="t hide">hide</span></td></tr></tbody></table></div>
     <div class="tbl">
       <table>
@@ -398,44 +469,33 @@ footer a{color:var(--ink)}
       </table>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">Private by default</div>
-    <h2>Forget a rule and the data disappears. It doesn't leak.</h2>
+  <div class="card">
+    <h2>Private by default — forget a rule and the data disappears, it doesn't leak</h2>
+    <div class="src">The safe outcome is the default one, so a mistake fails closed</div>
     <div class="tiles plain">
-      <div class="tile"><span class="v blue">No tag, no column</span><p>A column with no classification is hidden from every role. A new column stays inside HR's own tables until someone decides who may see it.</p></div>
+      <div class="tile"><span class="v">No tag, no column</span><p>A column with no classification is hidden from every role. A new column stays inside HR's own tables until someone decides who may see it.</p></div>
       <div class="tile"><span class="v">Private models</span><p>Raw HR models are private to People Analytics. A revenue model that references them fails to compile.</p></div>
       <div class="tile"><span class="v">Under 5, hidden</span><p>No people metric is shown for fewer than 5 people, because a number about two people is a number about a person.</p></div>
-      <div class="tile"><span class="v red">Keys, not records</span><p>Revenue joins people through a bridge that holds two hashed keys and nothing else.</p></div>
+      <div class="tile"><span class="v">Keys, not records</span><p>Revenue joins people through a bridge that holds two hashed keys and nothing else.</p></div>
     </div>
   </div>
-</section>
 
-<section id="proof">
-  <div class="wrap">
-    <div class="eyebrow">The proof</div>
-    <h2>The tests run on every build.</h2>
-    <p class="section-lede">Each test returns the rows that break its rule, so zero rows is a pass. Loosen the policy, say by giving analysts raw pay, and the build fails.</p>
+  <div class="card" id="proof">
+    <h2>The proof — tests that run on every build</h2>
+    <div class="src">Each test returns the rows that break its rule, so zero rows is a pass · loosen the policy, say by giving analysts raw pay, and the build fails</div>
     <div class="tbl"><table><thead><tr><th>Test</th><th>What it proves</th><th>Last build</th></tr></thead><tbody><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_no_pii_leaks.sql"><code>assert_no_pii_leaks</code></a></td><td>No masked value matches the original, and hidden columns are really gone</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_restricted_never_reaches_analyst_or_ai.sql"><code>assert_restricted_never_reaches_analyst_or_ai</code></a></td><td>Pay, health and gender never reach analysts or the AI agent</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_row_filters_hold.sql"><code>assert_row_filters_hold</code></a></td><td>The EMEA manager&#x27;s view holds exactly their EMEA sales team</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_small_groups_suppressed.sql"><code>assert_small_groups_suppressed</code></a></td><td>No number is shown for a group under 5</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_arr_waterfall_integrity.sql"><code>assert_arr_waterfall_integrity</code></a></td><td>The ARR waterfall balances to the cent, every month</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_arr_continuity.sql"><code>assert_arr_continuity</code></a></td><td>Each month&#x27;s ending ARR is the next month&#x27;s beginning ARR</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_acv_equals_components.sql"><code>assert_acv_equals_components</code></a></td><td>Every deal&#x27;s ACV equals its recurring plus one-time value</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_recon_category_counts.sql"><code>assert_recon_category_counts</code></a></td><td>The CRM-to-ERP reconciliation finds every seeded discrepancy</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_primary_quote_ties_to_bookings.sql"><code>assert_primary_quote_ties_to_bookings</code></a></td><td>Every deal has one primary quote, and it ties to the booking to the cent</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_list_prices_match_price_book.sql"><code>assert_list_prices_match_price_book</code></a></td><td>No quote invents its own list price</td><td class="nowrap ok">✓ pass</td></tr><tr><td class="nowrap"><a href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/tests/assert_unapproved_discounts_match_seeded.sql"><code>assert_unapproved_discounts_match_seeded</code></a></td><td>The approvals check finds every discount closed above policy without sign-off</td><td class="nowrap ok">✓ pass</td></tr></tbody></table></div>
   </div>
-</section>
 
-<section id="owners">
-  <div class="wrap">
-    <div class="eyebrow">Ownership</div>
-    <h2>Every table has an owner.</h2>
-    <p class="section-lede">Generated from dbt's manifest when the site is built, so it can't drift from the code. Certified tables have enforced contracts: change a column's name or type and the build fails.</p>
+  <div class="card" id="owners">
+    <h2>Ownership — every table has an owner</h2>
+    <div class="src">Generated from dbt's manifest when the site is built, so it can't drift from the code · certified tables have enforced contracts: change a column's name or type and the build fails</div>
     <div class="tbl"><table><thead><tr><th>Model</th><th>Owner</th><th>Access</th><th>Contract</th><th>Most sensitive column</th><th>Tests</th></tr></thead><tbody><tr><td class="nowrap"><code>dim_account</code><small>marts.dim_account</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td>13</td></tr><tr><td class="nowrap"><code>dim_product</code><small>marts.dim_product</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>9</td></tr><tr><td class="nowrap"><code>dim_sales_rep</code><small>marts.dim_sales_rep</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td>8</td></tr><tr><td class="nowrap"><code>fct_acv</code><small>marts.fct_acv</small></td><td class="nowrap">Revenue Analytics</td><td>public</td><td>✓ enforced</td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td>10</td></tr><tr><td class="nowrap"><code>fct_arr</code><small>marts.fct_arr</small></td><td class="nowrap">Revenue Analytics</td><td>public</td><td>✓ enforced</td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>9</td></tr><tr><td class="nowrap"><code>fct_quote</code><small>marts.fct_quote</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>10</td></tr><tr><td class="nowrap"><code>fct_quote_line</code><small>marts.fct_quote_line</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>5</td></tr><tr><td class="nowrap"><code>fct_usage</code><small>marts.fct_usage</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>6</td></tr><tr><td class="nowrap"><code>rpt_contract_to_netsuite_recon</code><small>marts.rpt_contract_to_netsuite_recon</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>6</td></tr><tr><td class="nowrap"><code>rpt_quote_to_cash</code><small>marts.rpt_quote_to_cash</small></td><td class="nowrap">Revenue Analytics</td><td>protected</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>5</td></tr><tr><td class="nowrap"><code>dim_employee</code><small>people.dim_employee</small></td><td class="nowrap">People Analytics</td><td>private</td><td>✓ enforced</td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td>10</td></tr><tr><td class="nowrap"><code>fct_headcount_monthly</code><small>people.fct_headcount_monthly</small></td><td class="nowrap">People Analytics</td><td>private</td><td></td><td class="nowrap"><span class="sens"><i class="dot confidential"></i>confidential</span></td><td>1</td></tr><tr><td class="nowrap"><code>int_people__employee_months</code><small>people.int_people__employee_months</small></td><td class="nowrap">People Analytics</td><td>private</td><td></td><td class="nowrap"><span class="sens"><i class="dot pii"></i>pii</span></td><td>0</td></tr><tr><td class="nowrap"><code>bridge_employee_sales_rep</code><small>people_metrics.bridge_employee_sales_rep</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>4</td></tr><tr><td class="nowrap"><code>rpt_people__department_summary</code><small>people_metrics.rpt_people__department_summary</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot confidential"></i>confidential</span></td><td>4</td></tr><tr><td class="nowrap"><code>rpt_people__pay_equity</code><small>people_metrics.rpt_people__pay_equity</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot confidential"></i>confidential</span></td><td>2</td></tr><tr><td class="nowrap"><code>rpt_people__revenue_per_employee</code><small>people_metrics.rpt_people__revenue_per_employee</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>2</td></tr><tr><td class="nowrap"><code>secure_ai_agent__department_summary</code><small>secure_ai_agent.department_summary</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot confidential"></i>confidential</span></td><td>2</td></tr><tr><td class="nowrap"><code>secure_ai_agent__revenue_per_employee</code><small>secure_ai_agent.revenue_per_employee</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot "></i>internal</span></td><td>0</td></tr><tr><td class="nowrap"><code>secure_analyst__employees</code><small>secure_analyst.employees</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td>2</td></tr><tr><td class="nowrap"><code>secure_finance__employees</code><small>secure_finance.employees</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td>1</td></tr><tr><td class="nowrap"><code>secure_hr__employees</code><small>secure_hr.employees</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td>1</td></tr><tr><td class="nowrap"><code>secure_sales_manager_emea__employees</code><small>secure_sales_manager_emea.employees</small></td><td class="nowrap">People Analytics</td><td>public</td><td></td><td class="nowrap"><span class="sens"><i class="dot restricted"></i>restricted</span></td><td>2</td></tr></tbody></table></div>
   </div>
-</section>
 
-<section id="production">
-  <div class="wrap">
-    <div class="eyebrow">In production</div>
-    <h2>On BigQuery, the warehouse enforces the same rules.</h2>
-    <p class="section-lede">Locally, DuckDB has no users, so the boundaries are schemas, views and tests. In production the same policy becomes access the warehouse itself enforces.</p>
+  <div class="card" id="production">
+    <h2>In production — the same rules, enforced by BigQuery</h2>
+    <div class="src">Locally, DuckDB has no users, so the boundaries are schemas, views and tests · in production the same policy becomes access the warehouse itself enforces</div>
     <div class="tbl">
       <table>
         <thead><tr><th>Here</th><th>On BigQuery</th><th>Reference</th></tr></thead>
@@ -449,7 +509,7 @@ footer a{color:var(--ink)}
     </div>
     <a class="more" href="https://github.com/bbehjoo/analytics-work-samples/blob/main/saas-data-platform/GOVERNANCE.md">Read GOVERNANCE.md</a>
   </div>
-</section>
+</div>
 
 </main>
 <footer>

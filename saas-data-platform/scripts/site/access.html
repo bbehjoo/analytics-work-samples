@@ -1,27 +1,20 @@
-<section class="hero page">
-  <div class="wrap">
-    <div class="eyebrow">Governance · who sees what</div>
-    <h1><span class="line">Private by <span class="blue">default.</span></span> <span class="line">Proven on <span class="red">every build.</span></span></h1>
-    <p class="lede">Every column that describes a person is classified where it enters the warehouse. One policy file decides what each role sees. The build fails if anything leaks.</p>
+<div class="rwrap">
+  <span class="pill">Governance · column classification · role-scoped access</span>
+  <h1 class="rh1">Who Sees What — private by <span class="hl-b">default</span>, proven on <span class="hl-r">every build</span></h1>
+  <div class="rsub">Every column that describes a person is classified where it enters the warehouse. One policy file decides what each role sees. The build fails if anything leaks.</div>
+
+  <div class="kpis four">
+    <div class="kpi"><div class="v">{{classified}}</div><div class="l">Columns classified</div><div class="s">internal, confidential, PII or restricted</div></div>
+    <div class="kpi"><div class="v">{{role_count}}</div><div class="l">Roles</div><div class="s">governed by one policy file</div></div>
+    <div class="kpi"><div class="v">{{proofs_passed}}</div><div class="l">Proof tests passing</div><div class="s">on every build, in CI</div></div>
+    <div class="kpi"><div class="v">{{owned}}</div><div class="l">Models owned</div><div class="s">each with a named owner</div></div>
   </div>
-</section>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat blue"><div class="v">{{classified}}</div><div class="l">columns classified as internal, confidential, PII or restricted</div></div>
-    <div class="stat ink"><div class="v">{{role_count}} roles</div><div class="l">governed by one policy file</div></div>
-    <div class="stat green"><div class="v">{{proofs_passed}}</div><div class="l">proof tests passing on every build</div></div>
-    <div class="stat red"><div class="v">{{owned}}</div><div class="l">models with a named owner</div></div>
-  </div>
-</div>
+  {{who_block}}
 
-{{who_block}}
-
-<section id="policy">
-  <div class="wrap">
-    <div class="eyebrow">The policy</div>
-    <h2>One file decides what each role sees.</h2>
-    <p class="section-lede">Each row is a category of column. Each cell is what that role gets. The secure views are generated from this file, and the tests read it too. <a href="{{gh}}/saas-data-platform/seeds/governance/access_policy.csv">access_policy.csv</a></p>
+  <div class="card" id="policy">
+    <h2>The policy — one file decides what each role sees</h2>
+    <div class="src">Each row is a category of column; each cell is what that role gets · the secure views are generated from <a href="{{gh}}/saas-data-platform/seeds/governance/access_policy.csv">access_policy.csv</a>, and the tests read it too</div>
     <div class="tbl">{{policy_table}}</div>
     <div class="tbl">
       <table>
@@ -37,44 +30,33 @@
       </table>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">Private by default</div>
-    <h2>Forget a rule and the data disappears. It doesn't leak.</h2>
+  <div class="card">
+    <h2>Private by default — forget a rule and the data disappears, it doesn't leak</h2>
+    <div class="src">The safe outcome is the default one, so a mistake fails closed</div>
     <div class="tiles plain">
-      <div class="tile"><span class="v blue">No tag, no column</span><p>A column with no classification is hidden from every role. A new column stays inside HR's own tables until someone decides who may see it.</p></div>
+      <div class="tile"><span class="v">No tag, no column</span><p>A column with no classification is hidden from every role. A new column stays inside HR's own tables until someone decides who may see it.</p></div>
       <div class="tile"><span class="v">Private models</span><p>Raw HR models are private to People Analytics. A revenue model that references them fails to compile.</p></div>
       <div class="tile"><span class="v">Under 5, hidden</span><p>No people metric is shown for fewer than 5 people, because a number about two people is a number about a person.</p></div>
-      <div class="tile"><span class="v red">Keys, not records</span><p>Revenue joins people through a bridge that holds two hashed keys and nothing else.</p></div>
+      <div class="tile"><span class="v">Keys, not records</span><p>Revenue joins people through a bridge that holds two hashed keys and nothing else.</p></div>
     </div>
   </div>
-</section>
 
-<section id="proof">
-  <div class="wrap">
-    <div class="eyebrow">The proof</div>
-    <h2>The tests run on every build.</h2>
-    <p class="section-lede">Each test returns the rows that break its rule, so zero rows is a pass. Loosen the policy, say by giving analysts raw pay, and the build fails.</p>
+  <div class="card" id="proof">
+    <h2>The proof — tests that run on every build</h2>
+    <div class="src">Each test returns the rows that break its rule, so zero rows is a pass · loosen the policy, say by giving analysts raw pay, and the build fails</div>
     <div class="tbl">{{proof_table}}</div>
   </div>
-</section>
 
-<section id="owners">
-  <div class="wrap">
-    <div class="eyebrow">Ownership</div>
-    <h2>Every table has an owner.</h2>
-    <p class="section-lede">Generated from dbt's manifest when the site is built, so it can't drift from the code. Certified tables have enforced contracts: change a column's name or type and the build fails.</p>
+  <div class="card" id="owners">
+    <h2>Ownership — every table has an owner</h2>
+    <div class="src">Generated from dbt's manifest when the site is built, so it can't drift from the code · certified tables have enforced contracts: change a column's name or type and the build fails</div>
     <div class="tbl">{{catalog_table}}</div>
   </div>
-</section>
 
-<section id="production">
-  <div class="wrap">
-    <div class="eyebrow">In production</div>
-    <h2>On BigQuery, the warehouse enforces the same rules.</h2>
-    <p class="section-lede">Locally, DuckDB has no users, so the boundaries are schemas, views and tests. In production the same policy becomes access the warehouse itself enforces.</p>
+  <div class="card" id="production">
+    <h2>In production — the same rules, enforced by BigQuery</h2>
+    <div class="src">Locally, DuckDB has no users, so the boundaries are schemas, views and tests · in production the same policy becomes access the warehouse itself enforces</div>
     <div class="tbl">
       <table>
         <thead><tr><th>Here</th><th>On BigQuery</th><th>Reference</th></tr></thead>
@@ -88,4 +70,4 @@
     </div>
     <a class="more" href="{{gh}}/saas-data-platform/GOVERNANCE.md">Read GOVERNANCE.md</a>
   </div>
-</section>
+</div>

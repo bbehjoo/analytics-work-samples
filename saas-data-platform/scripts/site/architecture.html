@@ -1,41 +1,30 @@
-<section class="hero page">
-  <div class="wrap">
-    <div class="eyebrow">How it's built · dbt + DuckDB</div>
-    <h1><span class="line">From raw to report in <span class="blue">five layers.</span></span> <span class="line">Every layer <span class="red">tested.</span></span></h1>
-    <p class="lede">The whole platform is one dbt project. Raw tables land, staging cleans them, intermediate holds the business logic, marts hold one grain each, and the serving layer is what people and AI agents query. This page is generated from dbt's own model graph, so it always matches the code.</p>
-    <div class="ctas">
-      <a class="btn primary" href="#lineage">Trace the lineage</a>
-      <a class="btn" href="#erd">The ERDs</a>
-      <a class="btn" href="{{gh}}/saas-data-platform/DATA_MODEL.md">DATA_MODEL.md</a>
-    </div>
+<div class="rwrap">
+  <span class="pill">How it's built · dbt + DuckDB · generated from dbt's manifest</span>
+  <h1 class="rh1">How It's Built — from raw to report in <span class="hl-b">five layers</span>, every layer <span class="hl-r">tested</span></h1>
+  <div class="rsub">The whole platform is one dbt project. Raw tables land, staging cleans them, intermediate holds the business logic, marts hold one grain each, and the serving layer is what people and AI agents query. This page is generated from dbt's own model graph, so it always matches the code.</div>
+  <div class="ctas">
+    <a class="btn primary" href="#lineage">Trace the lineage</a>
+    <a class="btn" href="#erd">The ERDs</a>
+    <a class="btn" href="{{gh}}/saas-data-platform/DATA_MODEL.md">DATA_MODEL.md</a>
   </div>
-</section>
 
-<div class="wrap">
-  <div class="stats">
-    <div class="stat ink"><div class="v">{{n_sources}}</div><div class="l">source tables from Salesforce, NetSuite, usage and the HRIS</div></div>
-    <div class="stat blue"><div class="v">{{n_models}}</div><div class="l">models across staging, intermediate, marts and serving</div></div>
-    <div class="stat green"><div class="v">{{n_tests}}</div><div class="l">tests, run with every build</div></div>
-    <div class="stat red"><div class="v">{{metric_count}}</div><div class="l">metrics defined once in the semantic layer</div></div>
+  <div class="kpis four">
+    <div class="kpi"><div class="v">{{n_sources}}</div><div class="l">Source tables</div><div class="s">Salesforce, NetSuite, usage, HRIS</div></div>
+    <div class="kpi"><div class="v">{{n_models}}</div><div class="l">Models</div><div class="s">staging, intermediate, marts, serving</div></div>
+    <div class="kpi"><div class="v">{{n_tests}}</div><div class="l">Tests</div><div class="s">run with every build</div></div>
+    <div class="kpi"><div class="v">{{metric_count}}</div><div class="l">Metrics</div><div class="s">defined once in the semantic layer</div></div>
   </div>
-</div>
 
-<section id="lineage">
-  <div class="wrap">
-    <div class="eyebrow">Lineage</div>
-    <h2>Tap any model to see what feeds it and what it feeds.</h2>
-    <p class="section-lede">Every box is a real table or view in the warehouse. The edge of each box shows its domain: <b class="blue">revenue</b> or <b class="red">people</b>.</p>
-    <div class="lineage">
-      <div class="linfo" aria-live="polite"></div>
-      <div class="lmap"></div>
-    </div>
+  <div class="card lineage" id="lineage">
+    <h2>Lineage — tap any model to see what feeds it and what it feeds</h2>
+    <div class="src">Every box is a real table or view in the warehouse · the left edge shows its domain: <b style="color:#2f6db0">revenue</b> or <b style="color:#c0492b">people</b></div>
+    <div class="linfo" aria-live="polite"></div>
+    <div class="lmap"></div>
   </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">The layers</div>
-    <h2>Each layer has one job.</h2>
+  <div class="card">
+    <h2>The layers — each one has one job</h2>
+    <div class="src">Counts and tests per layer come from the manifest</div>
     <div class="tbl">
       <table>
         <thead><tr><th>Layer</th><th>What lives here</th><th>Built as</th><th>Schemas</th><th>Models</th><th>Tests</th></tr></thead>
@@ -43,29 +32,26 @@
       </table>
     </div>
   </div>
-</section>
 
-<section id="erd">
-  <div class="wrap">
-    <div class="eyebrow">Entity-relationship diagrams</div>
-    <h2>Revenue is a star schema.</h2>
-    <p class="section-lede">Three conformed dimensions fan out to four facts through surrogate keys, so any fact can be sliced by account, product or rep the same way.</p>
+  <div class="card" id="erd">
+    <h2>Revenue is a star schema</h2>
+    <div class="src">Three conformed dimensions fan out to the facts through surrogate keys, so bookings, ARR, usage and pricing all slice by account, product or rep the same way</div>
     <div class="diagram"><pre class="mermaid">{{erd_revenue}}</pre></div>
-    <h2 style="margin-top:44px">People data stays behind one door.</h2>
-    <p class="section-lede"><code>dim_employee</code> and the headcount fact are private to People Analytics. Everyone else reads a secure view or a suppressed aggregate, and the revenue domain joins in through a bridge that carries keys only.</p>
+  </div>
+
+  <div class="card">
+    <h2>People data stays behind one door</h2>
+    <div class="src"><code>dim_employee</code> and the headcount fact are private to People Analytics · everyone else reads a secure view or a suppressed aggregate, and the revenue domain joins in through a bridge that carries keys only</div>
     <div class="diagram"><pre class="mermaid">{{erd_people}}</pre></div>
   </div>
-</section>
 
-<section>
-  <div class="wrap">
-    <div class="eyebrow">Build-ups</div>
-    <h2>How each mart is built.</h2>
-    <p class="section-lede">Seed, staging, intermediate, mart: the path behind each of the main tables. Tap one to open it.</p>
+  <div class="card">
+    <h2>How each mart is built</h2>
+    <div class="src">Seed → staging → intermediate → mart: the path behind each of the main tables · tap one to open it</div>
     <div class="builds">{{mart_builds}}</div>
     <a class="more" href="{{gh}}/saas-data-platform/README.md">Read the project README: modeling decisions, the semantic layer, and how to run it</a>
   </div>
-</section>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 <script>
@@ -73,10 +59,10 @@
     mermaid.initialize({
       startOnLoad: true, theme: "base", securityLevel: "strict",
       themeVariables: {
-        fontFamily: "Bricolage Grotesque, Segoe UI, system-ui, sans-serif", fontSize: "15px",
-        primaryColor: "#f5f5f7", primaryBorderColor: "#101010", primaryTextColor: "#101010",
-        lineColor: "#101010", secondaryColor: "#ffffff", tertiaryColor: "#ffffff",
-        attributeBackgroundColorOdd: "#ffffff", attributeBackgroundColorEven: "#f5f5f7"
+        fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif", fontSize: "14px",
+        primaryColor: "#f1f4f8", primaryBorderColor: "#12395b", primaryTextColor: "#16222e",
+        lineColor: "#5b6b7b", secondaryColor: "#ffffff", tertiaryColor: "#ffffff",
+        attributeBackgroundColorOdd: "#ffffff", attributeBackgroundColorEven: "#f1f4f8"
       },
       er: { useMaxWidth: false }, flowchart: { useMaxWidth: false, curve: "basis" }
     });

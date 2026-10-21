@@ -241,8 +241,6 @@ def lineage(manifest, metric_count):
             continue
         path = n["original_file_path"].replace(chr(92), "/")
         name = n["name"]
-        if "/semantic/" in path:
-            continue  # the time spine is a utility, not a step in the flow
         if n["resource_type"] == "seed":
             layer, desc = "source", seed_desc.get(name) or n.get("description")
         else:
@@ -348,7 +346,7 @@ def main():
         nav = "".join(
             f'<a href="{f}"{current if f == name else ""}>{lbl}</a>' for f, lbl, _, _ in PAGES
         ) + f'<a href="{REPO}">GitHub ↗</a>'
-        body_class = "report" if name in ("revenue.html", "people.html") else ""
+        body_class = "report"  # one professional theme across the whole site
         page = fill(read("base.html"), {**V, "title": title, "description": description, "nav": nav, "body_class": body_class,
                                         "content": content, "css": css, "js": js, "data": data})
         with open(os.path.join(DOCS, name), "w", encoding="utf-8", newline="\n") as f:
