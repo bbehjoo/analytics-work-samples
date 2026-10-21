@@ -21,7 +21,7 @@ It mirrors the revenue marts I've built in B2B SaaS, rebuilt from scratch on
 synthetic data, plus the people data and access controls a data leader is
 accountable for.
 
-📊 **[Live site →](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🧭 **[Lineage, layers & ERDs →](https://bbehjoo.github.io/analytics-work-samples/architecture.html)** &nbsp;·&nbsp; 🗺️ **[Data model diagrams →](saas-data-platform/DATA_MODEL.md)** &nbsp;·&nbsp; 🔐 **[Governance →](saas-data-platform/GOVERNANCE.md)**
+📊 **[Revenue report →](https://bbehjoo.github.io/analytics-work-samples/revenue.html)** &nbsp;·&nbsp; 👥 **[People report →](https://bbehjoo.github.io/analytics-work-samples/people.html)** &nbsp;·&nbsp; 🧭 **[Lineage, layers & ERDs →](https://bbehjoo.github.io/analytics-work-samples/architecture.html)** &nbsp;·&nbsp; 🔐 **[Who sees what →](https://bbehjoo.github.io/analytics-work-samples/access.html)** &nbsp;·&nbsp; 🗺️ **[Data model diagrams →](saas-data-platform/DATA_MODEL.md)** &nbsp;·&nbsp; 🏠 **[Site home →](https://bbehjoo.github.io/analytics-work-samples/)**
 
 **What it demonstrates**
 - **Layered modeling** — sources → staging → intermediate → marts (dims + facts) →
@@ -49,8 +49,8 @@ accountable for.
 - **A semantic + documentation layer** built for self-serve and **AI/MCP**
   consumption — every model and column described, metrics defined once, and AI
   agents limited to governed aggregates.
-- **Communication** — a revenue review and a people review as a
-  [live visual site](https://bbehjoo.github.io/analytics-work-samples/) and in
+- **Communication** — a [revenue report](https://bbehjoo.github.io/analytics-work-samples/revenue.html)
+  and a [people report](https://bbehjoo.github.io/analytics-work-samples/people.html), live and in
   [markdown](saas-data-platform/reports/), framing each finding as
   *what it is / why it matters / what to do*.
 
