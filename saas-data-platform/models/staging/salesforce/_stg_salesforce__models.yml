@@ -1,0 +1,116 @@
+version: 2
+
+models:
+  - name: stg_salesforce__accounts
+    description: Cleaned Salesforce accounts — one row per account with firmographics and segmentation.
+    columns:
+      - name: account_id
+        description: Primary key — Salesforce account id.
+        data_tests: [unique, not_null]
+      - name: owner_id
+        description: Owning rep (FK to users).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__users')
+                field: user_id
+
+  - name: stg_salesforce__users
+    description: Cleaned Salesforce users (sales reps).
+    columns:
+      - name: user_id
+        description: Primary key — Salesforce user id.
+        data_tests: [unique, not_null]
+      - name: user_name
+        description: The rep's name.
+        config: {meta: {sensitivity: pii, category: identity}}
+
+  - name: stg_salesforce__products
+    description: Cleaned product catalog with hierarchy and recurring flag.
+    columns:
+      - name: product_id
+        description: Primary key — product id / SKU.
+        data_tests: [unique, not_null]
+      - name: is_recurring
+        description: True for ARR-eligible subscription products.
+        data_tests: [not_null]
+
+  - name: stg_salesforce__opportunities
+    description: Cleaned opportunities — open pipeline and closed (won/lost) deals.
+    columns:
+      - name: opportunity_id
+        description: Primary key — opportunity id.
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__accounts')
+                field: account_id
+      - name: opportunity_type
+        description: New Business, Expansion, Renewal, Downgrade, or Churn.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['New Business', 'Expansion', 'Renewal', 'Downgrade', 'Churn']
+      - name: is_won
+        data_tests: [not_null]
+      - name: is_closed
+        data_tests: [not_null]
+
+  - name: stg_salesforce__opportunity_line_items
+    description: Cleaned opportunity line items — the grain of bookings / ACV.
+    columns:
+      - name: opportunity_line_id
+        description: Primary key — opportunity line id.
+        data_tests: [unique, not_null]
+      - name: opportunity_id
+        description: FK to opportunities.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__opportunities')
+                field: opportunity_id
+      - name: product_id
+        description: FK to products.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__products')
+                field: product_id
+
+  - name: stg_salesforce__contracts
+    description: Cleaned contracts; external_order_ref reconciles to NetSuite.
+    columns:
+      - name: contract_id
+        description: Primary key — contract id.
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__accounts')
+                field: account_id
+
+  - name: stg_salesforce__subscriptions
+    description: Cleaned subscription segments — the ARR source of truth.
+    columns:
+      - name: subscription_id
+        description: Primary key — subscription segment id.
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: FK to accounts.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__accounts')
+                field: account_id
+      - name: product_id
+        description: FK to products.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__products')
+                field: product_id

@@ -1,0 +1,201 @@
+account_id,account_name,industry,billing_country,geo_region,division,segment,account_tier,account_currency,owner_id,created_date,is_customer
+ACC-0001,"Ellis, Baker and Wright",Financial Services,France,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-010,2023-02-02,1
+ACC-0002,"Ryan, Burgess and Patterson",Healthcare,India,APAC,Enterprise,Enterprise,Tier 1,USD,USR-016,2022-08-02,1
+ACC-0003,"Ross, Robinson and Bright",Government,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2023-02-04,1
+ACC-0004,"Snyder, Campos and Callahan",Retail,Germany,EMEA,Commercial,SMB,Tier 3,EUR,USR-017,2022-11-17,1
+ACC-0005,Burton Ltd,Telecommunications,Australia,APAC,Public Sector,Enterprise,Tier 1,USD,USR-016,2022-12-28,1
+ACC-0006,Carlson-Cruz,Healthcare,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2022-11-20,1
+ACC-0007,"Ferrell, Rice and Maddox",Media,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-10-24,1
+ACC-0008,Frazier Inc,Government,United Kingdom,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-014,2022-05-19,1
+ACC-0009,"Dyer, Potter and Mack",Financial Services,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-001,2022-08-01,1
+ACC-0010,Rodriguez-Graham,Education,France,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-010,2023-03-02,1
+ACC-0011,Smith-Bowen,Media,United Kingdom,EMEA,Commercial,Mid-Market,Tier 2,USD,USR-008,2023-03-11,1
+ACC-0012,"Baker, Mason and White",Manufacturing,Sweden,EMEA,Public Sector,Mid-Market,Tier 2,USD,USR-010,2022-12-04,1
+ACC-0013,Harrell LLC,Education,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-004,2023-03-29,1
+ACC-0014,"Romero, Gonzalez and Brooks",Retail,Canada,NA,Commercial,SMB,Tier 3,USD,USR-023,2022-04-13,1
+ACC-0015,Ryan PLC,Energy,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-08-13,1
+ACC-0016,George Group,Government,United States,NA,Public Sector,Enterprise,Tier 1,USD,USR-007,2022-12-30,1
+ACC-0017,Rodriguez LLC,Financial Services,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-018,2022-12-01,1
+ACC-0018,Allen-Allen,Retail,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2022-10-02,1
+ACC-0019,"Arroyo, Miller and Tucker",Telecommunications,Japan,APAC,Enterprise,Enterprise,Tier 1,USD,USR-016,2022-07-06,1
+ACC-0020,Spence PLC,Technology,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-002,2022-09-10,1
+ACC-0021,Anderson Group,Healthcare,Australia,APAC,Enterprise,Enterprise,Tier 1,USD,USR-020,2022-11-29,1
+ACC-0022,"Martin, Rose and Obrien",Technology,United States,NA,Public Sector,SMB,Tier 3,USD,USR-004,2022-07-30,1
+ACC-0023,Hickman Ltd,Telecommunications,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-013,2022-06-29,1
+ACC-0024,"Harris, Collins and Carney",Telecommunications,Canada,NA,Commercial,SMB,Tier 3,USD,USR-001,2022-06-12,1
+ACC-0025,"Brooks, Lam and Hayes",Government,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-001,2022-07-29,1
+ACC-0026,Walker LLC,Technology,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-005,2023-02-19,1
+ACC-0027,Chapman and Sons,Telecommunications,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-013,2022-02-14,1
+ACC-0028,"Robinson, Jones and Welch",Manufacturing,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-01-25,1
+ACC-0029,Jones Inc,Technology,Germany,EMEA,Commercial,Mid-Market,Tier 2,GBP,USR-003,2022-04-18,1
+ACC-0030,Jones-Young,Healthcare,Brazil,LATAM,Enterprise,Enterprise,Tier 1,USD,USR-012,2022-12-26,1
+ACC-0031,"Washington, Ryan and Cummings",Manufacturing,Singapore,APAC,Enterprise,Enterprise,Tier 1,USD,USR-021,2022-05-02,1
+ACC-0032,"Johnston, Sanchez and Kennedy",Financial Services,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-003,2022-07-23,1
+ACC-0033,Lee-Davis,Manufacturing,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-007,2022-07-25,1
+ACC-0034,Gomez-Jenkins,Technology,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-009,2022-06-15,1
+ACC-0035,"Brown, Valdez and Lucas",Financial Services,France,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-003,2023-02-15,1
+ACC-0036,Powell LLC,Media,France,EMEA,Enterprise,Enterprise,Tier 1,GBP,USR-003,2022-01-18,1
+ACC-0037,Wright and Sons,Government,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2023-02-12,1
+ACC-0038,"West, Henderson and Ramirez",Telecommunications,Japan,APAC,Commercial,SMB,Tier 3,USD,USR-013,2022-09-02,1
+ACC-0039,Baxter Inc,Manufacturing,France,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-008,2022-01-08,1
+ACC-0040,Morton-Chase,Media,United States,NA,Commercial,SMB,Tier 3,USD,USR-024,2022-10-06,1
+ACC-0041,Williams PLC,Manufacturing,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2022-03-08,1
+ACC-0042,Novak and Sons,Manufacturing,Sweden,EMEA,Commercial,SMB,Tier 3,GBP,USR-017,2022-10-08,1
+ACC-0043,Russell Group,Government,France,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-014,2022-08-25,1
+ACC-0044,Hancock Inc,Media,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-007,2023-01-26,1
+ACC-0045,Gray Group,Manufacturing,Singapore,APAC,Commercial,Mid-Market,Tier 2,USD,USR-002,2022-10-25,1
+ACC-0046,House-Glover,Healthcare,France,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-014,2022-06-14,1
+ACC-0047,Henderson-Bernard,Energy,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-07-19,1
+ACC-0048,"Stanley, Tucker and Lee",Manufacturing,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-003,2022-04-27,1
+ACC-0049,Novak PLC,Healthcare,France,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-008,2022-11-09,1
+ACC-0050,"Daniels, Adkins and Brown",Telecommunications,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2022-07-12,1
+ACC-0051,"Woods, Calhoun and Schmidt",Financial Services,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-001,2022-10-27,1
+ACC-0052,Yu Inc,Energy,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-004,2022-05-10,1
+ACC-0053,Jones Inc,Telecommunications,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-017,2022-08-25,1
+ACC-0054,"Hensley, Powell and David",Retail,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-009,2022-07-10,1
+ACC-0055,"Sanchez, Wheeler and Harvey",Manufacturing,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2022-08-16,1
+ACC-0056,Sandoval-Cunningham,Retail,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-005,2022-05-04,1
+ACC-0057,Donovan-Harris,Telecommunications,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-08-06,1
+ACC-0058,"Edwards, Baker and Anderson",Energy,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-020,2022-06-05,1
+ACC-0059,"Evans, Stewart and Walton",Education,Canada,NA,Commercial,SMB,Tier 3,USD,USR-023,2022-07-27,1
+ACC-0060,Smith PLC,Healthcare,Germany,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-014,2022-10-05,1
+ACC-0061,"Ferrell, Jones and Lewis",Technology,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-025,2022-01-07,1
+ACC-0062,Anderson-Bailey,Retail,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-018,2022-09-16,1
+ACC-0063,Suarez LLC,Manufacturing,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-023,2023-04-21,1
+ACC-0064,Moore-Bass,Technology,United States,NA,Commercial,SMB,Tier 3,USD,USR-004,2023-05-17,1
+ACC-0065,"Turner, Riggs and Roman",Healthcare,Japan,APAC,Commercial,SMB,Tier 3,USD,USR-013,2022-03-25,1
+ACC-0066,"Smith, Montoya and Evans",Healthcare,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-05-26,1
+ACC-0067,"Garcia, Humphrey and Baker",Financial Services,Brazil,LATAM,Commercial,SMB,Tier 3,USD,USR-012,2023-03-19,1
+ACC-0068,Newton and Sons,Government,India,APAC,Commercial,Mid-Market,Tier 2,USD,USR-002,2022-06-15,1
+ACC-0069,Campbell-Clark,Government,Canada,NA,Commercial,SMB,Tier 3,USD,USR-004,2023-05-11,1
+ACC-0070,Harris-Walters,Technology,Canada,NA,Public Sector,Mid-Market,Tier 2,USD,USR-018,2022-10-29,1
+ACC-0071,Wagner-King,Healthcare,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-020,2022-12-02,1
+ACC-0072,Davis Group,Manufacturing,France,EMEA,Commercial,SMB,Tier 3,EUR,USR-017,2022-09-27,1
+ACC-0073,Williams-Cook,Government,Australia,APAC,Enterprise,Enterprise,Tier 1,USD,USR-020,2022-04-24,1
+ACC-0074,Walsh LLC,Retail,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2022-09-20,1
+ACC-0075,Figueroa PLC,Financial Services,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-007,2021-12-30,1
+ACC-0076,"Patterson, Smith and Jones",Energy,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2023-05-24,1
+ACC-0077,"Mckee, Gardner and Davenport",Energy,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-07-04,1
+ACC-0078,"Tran, Jordan and Williams",Manufacturing,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-009,2022-11-02,1
+ACC-0079,Nolan-Flynn,Energy,France,EMEA,Commercial,SMB,Tier 3,EUR,USR-008,2022-01-25,1
+ACC-0080,Nolan and Sons,Healthcare,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-010,2023-01-23,1
+ACC-0081,"Wright, Garcia and Deleon",Energy,Germany,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-008,2022-11-26,1
+ACC-0082,Dickson-Brady,Financial Services,Netherlands,EMEA,Commercial,SMB,Tier 3,EUR,USR-014,2023-04-29,1
+ACC-0083,Hancock and Sons,Healthcare,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-005,2022-08-17,1
+ACC-0084,Johnson-Doyle,Government,Australia,APAC,Public Sector,SMB,Tier 3,USD,USR-020,2022-05-20,1
+ACC-0085,Patton-Jenkins,Manufacturing,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-05-19,1
+ACC-0086,"Shields, Cochran and Adams",Manufacturing,United States,NA,Commercial,SMB,Tier 3,USD,USR-007,2023-03-22,1
+ACC-0087,"Rodriguez, Brennan and Garrison",Energy,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-07-02,1
+ACC-0088,Gonzalez Group,Financial Services,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2023-01-03,1
+ACC-0089,Torres-Pope,Healthcare,Japan,APAC,Commercial,Mid-Market,Tier 2,USD,USR-025,2022-11-19,1
+ACC-0090,Walker Ltd,Energy,United States,NA,Commercial,SMB,Tier 3,USD,USR-009,2022-04-07,1
+ACC-0091,Ross LLC,Telecommunications,Netherlands,EMEA,Public Sector,Mid-Market,Tier 2,USD,USR-003,2022-11-18,1
+ACC-0092,Rasmussen LLC,Manufacturing,United Kingdom,EMEA,Commercial,SMB,Tier 3,EUR,USR-003,2023-03-12,1
+ACC-0093,May-Ross,Telecommunications,Germany,EMEA,Commercial,SMB,Tier 3,EUR,USR-017,2022-08-24,1
+ACC-0094,"Rivera, Johnson and Wiley",Financial Services,Mexico,LATAM,Commercial,Mid-Market,Tier 2,USD,USR-022,2023-03-11,1
+ACC-0095,White-Estes,Energy,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-001,2022-06-24,1
+ACC-0096,Johnson-Carlson,Education,United States,NA,Commercial,SMB,Tier 3,USD,USR-001,2022-08-03,1
+ACC-0097,Chandler-Edwards,Technology,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2022-08-19,1
+ACC-0098,"Joyce, Wilson and Lam",Retail,France,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-017,2023-02-10,1
+ACC-0099,Scott Ltd,Energy,United States,NA,Public Sector,Mid-Market,Tier 2,USD,USR-004,2022-01-05,1
+ACC-0100,Smith-Frost,Manufacturing,India,APAC,Commercial,SMB,Tier 3,USD,USR-025,2022-06-28,1
+ACC-0101,"Mcdaniel, Bentley and Mclaughlin",Government,Brazil,LATAM,Commercial,Mid-Market,Tier 2,USD,USR-011,2023-01-22,1
+ACC-0102,Diaz Inc,Education,Singapore,APAC,Commercial,SMB,Tier 3,USD,USR-016,2023-01-29,1
+ACC-0103,"Mccall, Hanson and Alvarado",Healthcare,Canada,NA,Commercial,SMB,Tier 3,USD,USR-024,2022-05-31,1
+ACC-0104,Cortez LLC,Media,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2023-02-25,1
+ACC-0105,"Parker, Ortiz and Powell",Technology,Brazil,LATAM,Commercial,Mid-Market,Tier 2,USD,USR-015,2022-06-02,1
+ACC-0106,Spencer-Lee,Technology,Netherlands,EMEA,Commercial,SMB,Tier 3,EUR,USR-014,2022-04-20,1
+ACC-0107,"Bentley, Byrd and Orr",Financial Services,Mexico,LATAM,Commercial,SMB,Tier 3,USD,USR-015,2022-08-11,1
+ACC-0108,"Carroll, Sullivan and Bass",Financial Services,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-005,2022-10-18,1
+ACC-0109,Mitchell-Jordan,Media,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-04-30,1
+ACC-0110,"Lawson, Morris and Ramos",Retail,India,APAC,Public Sector,SMB,Tier 3,USD,USR-002,2022-05-17,1
+ACC-0111,"Lewis, Kennedy and Santana",Financial Services,Japan,APAC,Commercial,Mid-Market,Tier 2,USD,USR-002,2022-12-07,1
+ACC-0112,"Jackson, Miller and Robertson",Retail,United Kingdom,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-008,2022-09-03,1
+ACC-0113,"Harvey, Davis and Crane",Energy,Germany,EMEA,Commercial,SMB,Tier 3,GBP,USR-008,2023-01-18,1
+ACC-0114,Chambers and Sons,Manufacturing,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2022-07-27,1
+ACC-0115,Hernandez Inc,Telecommunications,Canada,NA,Commercial,SMB,Tier 3,USD,USR-009,2022-12-25,1
+ACC-0116,Riggs PLC,Financial Services,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2022-06-21,1
+ACC-0117,Gibson Ltd,Manufacturing,Sweden,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-014,2022-02-16,1
+ACC-0118,"Lee, Horton and Snyder",Retail,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-016,2022-10-03,1
+ACC-0119,Hernandez Ltd,Financial Services,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-005,2022-06-06,1
+ACC-0120,Stafford Inc,Financial Services,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-005,2022-08-16,1
+ACC-0121,Robinson-Brock,Manufacturing,Germany,EMEA,Commercial,SMB,Tier 3,EUR,USR-017,2023-03-09,1
+ACC-0122,"Holmes, Williams and Wright",Financial Services,Canada,NA,Commercial,SMB,Tier 3,USD,USR-018,2023-01-23,1
+ACC-0123,Bryant Group,Education,United States,NA,Commercial,SMB,Tier 3,USD,USR-023,2022-12-15,1
+ACC-0124,"Schmidt, Hansen and Stewart",Government,United Kingdom,EMEA,Commercial,Mid-Market,Tier 2,GBP,USR-010,2022-04-10,1
+ACC-0125,Salazar-Ball,Education,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-021,2022-03-24,1
+ACC-0126,"Simmons, Meadows and Griffin",Telecommunications,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-009,2022-09-22,1
+ACC-0127,Manning Group,Retail,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2023-01-22,1
+ACC-0128,Green-Wright,Government,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2023-02-12,1
+ACC-0129,"Ramirez, Strickland and Washington",Technology,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-016,2022-10-25,1
+ACC-0130,Hill Inc,Media,Canada,NA,Commercial,SMB,Tier 3,USD,USR-004,2022-05-06,1
+ACC-0131,"Mitchell, Nelson and Flores",Financial Services,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2023-01-14,1
+ACC-0132,"Miller, Hernandez and Reyes",Retail,Sweden,EMEA,Commercial,Mid-Market,Tier 2,GBP,USR-017,2022-02-22,1
+ACC-0133,Mccarthy Inc,Government,United States,NA,Commercial,SMB,Tier 3,USD,USR-005,2022-07-14,1
+ACC-0134,Russell-Daniels,Financial Services,Japan,APAC,Commercial,SMB,Tier 3,USD,USR-013,2023-04-19,1
+ACC-0135,Brown-Wall,Technology,Canada,NA,Commercial,SMB,Tier 3,USD,USR-018,2022-08-20,1
+ACC-0136,Stein-Silva,Energy,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2022-11-28,1
+ACC-0137,"Smith, Gilmore and Johnston",Manufacturing,United Kingdom,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-017,2022-04-07,1
+ACC-0138,Smith-Bell,Financial Services,Brazil,LATAM,Commercial,SMB,Tier 3,USD,USR-015,2022-03-03,1
+ACC-0139,Castaneda-Ashley,Financial Services,Australia,APAC,Commercial,SMB,Tier 3,USD,USR-013,2022-08-15,1
+ACC-0140,Medina-Navarro,Education,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-014,2022-08-24,1
+ACC-0141,"Hurst, Freeman and Nelson",Telecommunications,United States,NA,Commercial,SMB,Tier 3,USD,USR-007,2022-11-06,1
+ACC-0142,Johnson-Rogers,Telecommunications,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-018,2022-02-24,1
+ACC-0143,"Yates, Ramsey and Pittman",Financial Services,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2022-04-25,1
+ACC-0144,Hooper PLC,Financial Services,Canada,NA,Commercial,SMB,Tier 3,USD,USR-018,2022-09-02,1
+ACC-0145,Meadows PLC,Government,India,APAC,Commercial,SMB,Tier 3,USD,USR-016,2022-08-03,1
+ACC-0146,"Alvarado, Miller and Patterson",Media,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-004,2022-08-21,1
+ACC-0147,White-Green,Government,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-001,2022-05-12,1
+ACC-0148,Lewis-Murphy,Media,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-018,2022-09-01,1
+ACC-0149,Ramirez-Bean,Financial Services,India,APAC,Enterprise,Enterprise,Tier 1,USD,USR-002,2022-08-04,1
+ACC-0150,King-Miller,Media,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-009,2022-08-15,1
+ACC-0151,Curry Inc,Telecommunications,United Kingdom,EMEA,Public Sector,Enterprise,Tier 1,EUR,USR-014,2022-04-26,1
+ACC-0152,Walker-Jones,Telecommunications,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-018,2022-07-10,1
+ACC-0153,"Williams, Johnson and Wright",Technology,Sweden,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-017,2022-08-20,1
+ACC-0154,Howell and Sons,Media,United States,NA,Commercial,SMB,Tier 3,USD,USR-009,2022-11-29,1
+ACC-0155,Wells Inc,Education,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-007,2022-04-24,1
+ACC-0156,"Gould, Marshall and Scott",Technology,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-020,2023-01-22,1
+ACC-0157,Jackson-Lawson,Manufacturing,India,APAC,Commercial,Mid-Market,Tier 2,USD,USR-020,2022-05-09,1
+ACC-0158,"Higgins, Strickland and Martin",Media,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-024,2022-04-23,1
+ACC-0159,Rodriguez-Johnson,Telecommunications,Japan,APAC,Commercial,Mid-Market,Tier 2,USD,USR-002,2022-12-25,1
+ACC-0160,Johnston-Odonnell,Retail,Germany,EMEA,Public Sector,Mid-Market,Tier 2,EUR,USR-017,2022-12-05,1
+ACC-0161,Sanders-Espinoza,Healthcare,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-007,2023-01-13,1
+ACC-0162,Vargas Ltd,Energy,United Kingdom,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-017,2022-07-17,1
+ACC-0163,Garcia LLC,Energy,Sweden,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-014,2022-11-28,1
+ACC-0164,"Burke, Martinez and Riggs",Media,Sweden,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-003,2023-01-06,1
+ACC-0165,Reed Group,Government,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-024,2023-03-11,1
+ACC-0166,"Wood, Hunter and Peterson",Technology,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-005,2023-01-09,1
+ACC-0167,Short-Garcia,Healthcare,Singapore,APAC,Public Sector,SMB,Tier 3,USD,USR-025,2022-07-29,1
+ACC-0168,Reid-Poole,Telecommunications,Netherlands,EMEA,Commercial,Mid-Market,Tier 2,EUR,USR-014,2022-12-10,1
+ACC-0169,"Hernandez, Thompson and Boyd",Manufacturing,United Kingdom,EMEA,Public Sector,Enterprise,Tier 1,EUR,USR-014,2022-01-25,1
+ACC-0170,"Nelson, Morton and Medina",Media,Japan,APAC,Commercial,Mid-Market,Tier 2,USD,USR-013,2022-03-01,1
+ACC-0171,Marshall-Petersen,Healthcare,Netherlands,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-010,2022-05-08,1
+ACC-0172,"Adams, Christian and Rivas",Technology,Australia,APAC,Commercial,Mid-Market,Tier 2,USD,USR-016,2022-08-25,1
+ACC-0173,Ramirez Group,Retail,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-007,2022-10-15,1
+ACC-0174,Christensen PLC,Media,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-001,2022-07-20,1
+ACC-0175,"Barnett, Rogers and Snyder",Energy,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-005,2022-05-06,1
+ACC-0176,White-Lewis,Retail,United States,NA,Commercial,SMB,Tier 3,USD,USR-024,2022-11-30,1
+ACC-0177,Peterson-Beard,Energy,Canada,NA,Commercial,SMB,Tier 3,USD,USR-024,2023-01-08,1
+ACC-0178,"Beard, Peters and Black",Manufacturing,Sweden,EMEA,Commercial,SMB,Tier 3,EUR,USR-008,2022-01-08,1
+ACC-0179,Miller Ltd,Manufacturing,Canada,NA,Public Sector,Mid-Market,Tier 2,USD,USR-004,2022-09-11,1
+ACC-0180,Freeman-Chang,Energy,United States,NA,Public Sector,SMB,Tier 3,USD,USR-007,2023-01-17,1
+ACC-0181,"Alvarez, Joseph and West",Media,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-004,2022-12-19,1
+ACC-0182,Davis and Sons,Healthcare,United States,NA,Commercial,SMB,Tier 3,USD,USR-005,2022-07-09,1
+ACC-0183,Holt-Torres,Energy,India,APAC,Commercial,Mid-Market,Tier 2,USD,USR-025,2022-04-21,1
+ACC-0184,"Wood, Tran and Cooper",Education,United States,NA,Enterprise,Enterprise,Tier 1,USD,USR-005,2022-06-25,1
+ACC-0185,"Pierce, Bell and Chavez",Energy,United Kingdom,EMEA,Enterprise,Enterprise,Tier 1,EUR,USR-017,2022-10-07,1
+ACC-0186,King-Martinez,Government,India,APAC,Public Sector,Mid-Market,Tier 2,USD,USR-021,2021-12-31,1
+ACC-0187,Stewart Ltd,Healthcare,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-023,2022-05-25,1
+ACC-0188,"Tapia, Vaughn and Lee",Telecommunications,Canada,NA,Enterprise,Enterprise,Tier 1,USD,USR-001,2022-10-04,1
+ACC-0189,"Washington, Hardy and Bray",Media,Canada,NA,Commercial,SMB,Tier 3,USD,USR-001,2023-04-28,1
+ACC-0190,"Carlson, Hooper and Wall",Healthcare,United States,NA,Commercial,SMB,Tier 3,USD,USR-018,2022-06-05,1
+ACC-0191,Perez-White,Healthcare,Germany,EMEA,Commercial,SMB,Tier 3,USD,USR-008,2021-12-01,1
+ACC-0192,Erickson and Sons,Manufacturing,Netherlands,EMEA,Commercial,SMB,Tier 3,EUR,USR-010,2022-09-10,1
+ACC-0193,Williams-Brown,Manufacturing,Mexico,LATAM,Enterprise,Enterprise,Tier 1,USD,USR-011,2023-01-06,1
+ACC-0194,Terry-Martinez,Telecommunications,Singapore,APAC,Enterprise,Enterprise,Tier 1,USD,USR-020,2022-09-19,1
+ACC-0195,Garcia-Smith,Energy,India,APAC,Commercial,Mid-Market,Tier 2,USD,USR-025,2022-05-10,1
+ACC-0196,Harrison-Alexander,Education,United States,NA,Public Sector,Mid-Market,Tier 2,USD,USR-005,2022-08-19,1
+ACC-0197,Sheppard LLC,Healthcare,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2022-09-17,1
+ACC-0198,Wilson-Jones,Manufacturing,United States,NA,Commercial,Mid-Market,Tier 2,USD,USR-023,2023-04-03,1
+ACC-0199,Jones-Soto,Technology,Canada,NA,Commercial,Mid-Market,Tier 2,USD,USR-005,2022-02-25,1
+ACC-0200,Hernandez PLC,Government,Netherlands,EMEA,Commercial,SMB,Tier 3,GBP,USR-014,2022-01-27,1

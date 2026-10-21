@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: hris
+    description: >
+      The HRIS (Workday-shaped), the system of record for people: who works here,
+      their pay, their leave and their demographics. The most sensitive data in
+      the company. In this sample the tables are emulated by CSV seeds; in
+      production they land in a restricted raw_hris dataset that only the People
+      Analytics pipeline can read.
+    schema: raw_hris
+    tables:
+      - name: workers
+        identifier: hris_workers
+        description: One row per person ever employed, with identity, org placement and employment dates.
+      - name: compensation
+        identifier: hris_compensation
+        description: Current pay per worker (base salary, bonus target, equity grant).
+      - name: comp_bands
+        identifier: hris_comp_bands
+        description: Pay bands (min, midpoint, max) by job level and region.
+      - name: leave
+        identifier: hris_leave
+        description: Leaves of absence. The leave type is health information.

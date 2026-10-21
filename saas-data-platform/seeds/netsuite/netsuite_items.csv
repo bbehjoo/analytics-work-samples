@@ -1,0 +1,13 @@
+ns_item_id,item_name,item_type,sfdc_product_external_id
+NSI-001,Analytics Cloud,Service,ANL-CLOUD
+NSI-002,Analytics Self-Hosted,Service,ANL-SELF
+NSI-003,Automation Cloud,Service,AUT-CLOUD
+NSI-004,Automation Enterprise,Service,AUT-ENT
+NSI-005,Integrations Hub,Service,INT-CLOUD
+NSI-006,Integrations Enterprise,Service,INT-ENT
+NSI-007,Audit Log,Service,SEC-AUDIT
+NSI-008,Access Governance,Service,SEC-ACCESS
+NSI-009,Enterprise Suite,Service,ENT-SUITE
+NSI-010,Implementation Services,OtherCharge,PS-IMPL
+NSI-011,Training Package,OtherCharge,PS-TRAIN
+NSI-012,Migration Services,OtherCharge,PS-MIGR

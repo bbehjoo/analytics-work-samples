@@ -1,0 +1,67 @@
+<section class="hero page">
+  <div class="wrap">
+    <div class="eyebrow">People review · HRIS, aggregates only</div>
+    <h1><span class="line">Hiring outran <span class="blue">revenue.</span></span> <span class="line">An average hid a <span class="red">pay gap.</span></span></h1>
+    <p class="lede">A year-end people review built only on <code>people_metrics</code>: aggregates, with any group under 5 people suppressed. No chart on this page needs a single person's record.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat ink"><div class="v">{{headcount}}</div><div class="l">People on {{as_of}}</div></div>
+    <div class="stat blue"><div class="v">{{rpe_end}}</div><div class="l">ARR per employee, down from a {{rpe_peak}} peak</div></div>
+    <div class="stat green"><div class="v">{{attrition}}</div><div class="l">Attrition, last 12 months ({{vol_attrition}} voluntary)</div></div>
+    <div class="stat red"><div class="v">{{gap_l4}}</div><div class="l">Pay gap for women at L4, against the same band</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <article class="finding" id="efficiency">
+      <div class="eyebrow">1 · ARR per employee</div>
+      <h2>ARR per employee peaked at {{rpe_peak}}, then slipped to {{rpe_end}}.</h2>
+      <div class="chart-title">ARR per employee by month</div>
+      <div class="chart" data-chart="rpe"></div>
+      <div class="wwd">
+        <div><h4>What it is</h4><p>Company ARR divided by headcount at each month-end. The one number that joins the revenue and people domains.</p></div>
+        <div><h4>Why it matters</h4><p>Each hire supported more ARR until {{rpe_peak_month}}. In the six months after, the company added {{h2_hires}} people while ARR grew {{h2_arr}}, and efficiency fell back to where it was a year earlier.</p></div>
+        <div class="do"><h4>What to do</h4><p>Use ARR per employee as a guardrail on the next hiring plan: approve headcount against planned ARR so the ratio holds at $200k or better, and review it monthly next to the ARR bridge.</p></div>
+      </div>
+      <div class="src">Source: rpt_people__revenue_per_employee</div>
+    </article>
+
+    <article class="finding" id="attrition">
+      <div class="eyebrow">2 · Attrition</div>
+      <h2>Customer Success loses {{cs_attrition}} of its people a year.</h2>
+      <div class="chart-title">Voluntary attrition, last 12 months, by department</div>
+      <div class="chart" data-chart="attrition" style="min-height:0"></div>
+      <div class="wwd">
+        <div><h4>What it is</h4><p>Exits in the last 12 months divided by average headcount, by department. Every Customer Success exit was voluntary.</p></div>
+        <div><h4>Why it matters</h4><p>Customer Success owns renewals, and churn tripled to {{churn_2025}} in the same year. The two may be linked, but this data can't show it yet. Pay isn't the obvious cause: the team is paid at its band midpoint.</p></div>
+        <div class="do"><h4>What to do</h4><p>Run stay interviews in Customer Success this quarter. Add the missing join, which CSM owns which account, so the next review can test whether accounts that lost their CSM churned more.</p></div>
+      </div>
+      <div class="src">Source: rpt_people__department_summary · Legal has fewer than 5 people, so it shows no numbers</div>
+    </article>
+
+    <article class="finding" id="pay">
+      <div class="eyebrow">3 · Pay equity</div>
+      <h2>Company-wide, pay looks equal. At L4, it isn't.</h2>
+      <div class="tiles plain">
+        <div class="tile"><span class="v">{{avg_w}} vs {{avg_m}}</span><p>average base pay, women and men, across the company</p></div>
+        <div class="tile"><span class="v red">{{gap_l4}}</span><p>women's pay against band at L4, compared with men at the same level ({{l4_women}} women)</p></div>
+        <div class="tile"><span class="v">{{l4_cost}}</span><p>a year to close the L4 gap, {{l4_cost_pct}} of base payroll</p></div>
+        <div class="tile"><span class="v">{{gap_l6}}</span><p>at L6, the level to watch next cycle</p></div>
+      </div>
+      <div class="chart-title">Women's compa-ratio versus men at the same level</div>
+      <div class="chart" data-chart="pay_gap" style="min-height:0"></div>
+      <div class="wwd">
+        <div><h4>What it is</h4><p>Compa-ratio, salary divided by the band midpoint for the person's level and region, compared within each level. That makes it like for like.</p></div>
+        <div><h4>Why it matters</h4><p>The company average looks fair. At L4, women are paid {{l4_w_cr}} of their band midpoint and men {{l4_m_cr}}. A headline average would never show it.</p></div>
+        <div class="do"><h4>What to do</h4><p>Close the L4 gap in the next comp cycle, watch L6, and make this level-by-gender check a standing step in every comp review.</p></div>
+      </div>
+      <div class="src">Source: rpt_people__pay_equity · L7 has fewer than 5 women, so it shows no numbers</div>
+    </article>
+
+    <p class="note">Every number on this page comes from <code>people_metrics</code>, where no group under 5 people is ever shown. That rule is a test, <code>assert_small_groups_suppressed</code>, not a convention. See <a href="access.html">who sees what</a>.</p>
+  </div>
+</section>

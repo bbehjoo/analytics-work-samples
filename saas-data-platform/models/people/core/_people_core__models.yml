@@ -1,0 +1,210 @@
+version: 2
+
+# The restricted core of the people domain. Private to the People Analytics group:
+# a model in any other group that refs these fails to compile.
+#
+# Column meta drives the secure views (macros/governance/secure_view.sql):
+#   sensitivity       internal | confidential | pii | restricted
+#   category          a row of seeds/governance/access_policy.csv
+#   mask              email | text            how "mask" is applied
+#   band              salary | age            how "band" is applied (no band rule: hidden)
+#   pseudonym_prefix / pseudonym_source       how "pseudonymize" is applied
+#   flag_label                                what "flag" shows instead of the value
+models:
+  - name: dim_employee
+    description: >
+      One row per person ever employed, as of the HR snapshot date: identity, org,
+      pay against band, current leave and gender. Certified, contract enforced,
+      private. Read it through a secure_<role> view.
+    config:
+      contract: {enforced: true}
+      meta: {tier: certified}
+    columns:
+      - name: employee_key
+        data_type: varchar
+        description: Surrogate key (hash of worker_id).
+        config: {meta: {sensitivity: pii, category: identity, pseudonym_prefix: 'K-', pseudonym_source: worker_id}}
+        data_tests: [unique, not_null]
+      - name: worker_id
+        data_type: varchar
+        description: HRIS worker id.
+        config: {meta: {sensitivity: pii, category: identity, pseudonym_prefix: 'P-'}}
+        data_tests: [unique, not_null]
+      - name: employee_name
+        data_type: varchar
+        description: Full name.
+        config: {meta: {sensitivity: pii, category: identity, pseudonym_prefix: 'Employee ', pseudonym_source: worker_id}}
+      - name: work_email
+        data_type: varchar
+        description: Company email address.
+        config: {meta: {sensitivity: pii, category: work_contact, mask: email}}
+      - name: personal_email
+        data_type: varchar
+        description: Personal email address.
+        config: {meta: {sensitivity: pii, category: personal}}
+      - name: home_postal_code
+        data_type: varchar
+        description: Home postal code.
+        config: {meta: {sensitivity: pii, category: personal}}
+      - name: date_of_birth
+        data_type: date
+        description: Date of birth. Shown to analysts as an age band (30s, 40s).
+        config: {meta: {sensitivity: pii, category: personal, band: age}}
+      - name: department
+        data_type: varchar
+        description: Department.
+        config: {meta: {sensitivity: internal, category: org}}
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Engineering', 'Sales', 'Customer Success', 'Marketing', 'Product', 'Finance', 'People', 'Legal']
+      - name: job_title
+        data_type: varchar
+        description: Job title.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: region
+        data_type: varchar
+        description: "Region: NA, EMEA, APAC, LATAM."
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: country
+        data_type: varchar
+        description: Work country.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: manager_id
+        data_type: varchar
+        description: Worker id of the manager. Pseudonymized the same way as worker_id, so the org chart still joins.
+        config: {meta: {sensitivity: pii, category: identity, pseudonym_prefix: 'P-'}}
+      - name: job_level
+        data_type: varchar
+        description: Job level, L1 to L7.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: hire_date
+        data_type: date
+        description: Hire date.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: termination_date
+        data_type: date
+        description: Last day, if the person has left.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: termination_type
+        data_type: varchar
+        description: Voluntary or Involuntary.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: is_active
+        data_type: boolean
+        description: Still employed on the snapshot date.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: base_salary
+        data_type: integer
+        description: Annual base salary, USD. Shown to analysts as a $20k band.
+        config: {meta: {sensitivity: restricted, category: comp, band: salary}}
+        data_tests: [not_null]
+      - name: bonus_target_pct
+        data_type: double
+        description: Target bonus as a share of base.
+        config: {meta: {sensitivity: restricted, category: comp}}
+      - name: equity_grant_usd
+        data_type: integer
+        description: Equity grant value, USD.
+        config: {meta: {sensitivity: restricted, category: comp}}
+      - name: band_mid
+        data_type: integer
+        description: Midpoint of the pay band for this level and region.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: compa_ratio
+        data_type: double
+        description: Base salary divided by the band midpoint. 1.00 is paid at midpoint.
+        config: {meta: {sensitivity: restricted, category: comp}}
+      - name: gender
+        data_type: varchar
+        description: Self-reported gender. Used only for pay-equity analysis.
+        config: {meta: {sensitivity: restricted, category: demographic}}
+      - name: current_leave_type
+        data_type: varchar
+        description: Leave type if on leave on the snapshot date. Health information; a manager sees only "Away".
+        config: {meta: {sensitivity: restricted, category: health, flag_label: 'Away'}}
+      - name: is_sales_rep
+        data_type: boolean
+        description: True for the Salesforce sales reps.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: salesforce_user_id
+        data_type: varchar
+        description: Salesforce user id, for the sales reps.
+        config: {meta: {sensitivity: pii, category: identity, pseudonym_prefix: 'U-'}}
+
+  - name: int_people__employee_months
+    description: Employee x month rows with active, hire and exit flags. Feeds headcount and attrition.
+    columns:
+      - name: month_end
+        description: Month-end date.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: worker_id
+        description: HRIS worker id.
+        config: {meta: {sensitivity: pii, category: identity}}
+      - name: department
+        description: Department.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: region
+        description: Region.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: job_level
+        description: Job level.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: is_active_at_month_end
+        description: On the books at month end.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: is_hire
+        description: Hired in the month.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: is_exit
+        description: Left in the month.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: exit_type
+        description: Voluntary or Involuntary, in the month they left.
+        config: {meta: {sensitivity: confidential, category: employment}}
+
+  - name: fct_headcount_monthly
+    description: >
+      Headcount, hires and exits by month-end, department and region. Private,
+      because a small team in one region can be one person.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [month_end, department, region]
+    columns:
+      - name: department
+        description: Department.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: region
+        description: Region.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: month_end
+        description: Month-end date.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: headcount
+        description: People on the books at month end.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: hires
+        description: People hired in the month.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: exits
+        description: People who left in the month.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: voluntary_exits
+        description: Exits the person chose.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: involuntary_exits
+        description: Exits the company chose.
+        config: {meta: {sensitivity: confidential, category: employment}}
+
+  - name: bridge_employee_sales_rep
+    description: >
+      Keys only, employee to sales rep. How the revenue domain joins to people
+      without touching an HR record. Public.
+    columns:
+      - name: employee_key
+        description: FK to dim_employee.
+        data_tests: [unique, not_null]
+      - name: sales_rep_key
+        description: FK to dim_sales_rep.
+        data_tests: [unique, not_null]

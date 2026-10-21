@@ -1,0 +1,85 @@
+name: 'saas_data_platform'
+version: '2.0.0'
+config-version: 2
+
+# This project ships its own profiles.yml (DuckDB) so it runs with no setup.
+profile: 'saas_data_platform'
+require-dbt-version: [">=1.7.0", "<2.0.0"]
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  people_as_of: '2025-12-31'     # the HR snapshot date
+  min_group_size: 5              # never report a people metric for fewer than 5 people
+  # Salt for pseudonyms. Locally a fixed demo value; in production it comes from
+  # a secret store so nobody can rebuild the mapping from employee ids.
+  pseudonym_salt: "{{ env_var('PSEUDONYM_SALT', 'local-demo-salt') }}"
+
+# ----------------------------------------------------------------------------
+# Two domains, each with an owner (models/groups.yml):
+#   revenue  Salesforce + NetSuite + usage -> staging -> intermediate -> marts
+#   people   HRIS -> people_staging -> people (restricted) -> people_metrics
+# plus secure_<role> views, the only way people data leaves its domain.
+#
+# A generate_schema_name override (macros/) makes these schema names literal.
+# Sensitive data gets its own schemas so a warehouse grant can lock them down.
+# ----------------------------------------------------------------------------
+models:
+  saas_data_platform:
+    +group: revenue
+    staging:
+      +materialized: view
+      +schema: staging
+      hris:
+        +group: people
+        +schema: people_staging
+        +access: private          # only People Analytics models can ref raw HR data
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
+    people:
+      +group: people
+      core:
+        +materialized: table
+        +schema: people
+        +access: private
+      metrics:
+        +materialized: table
+        +schema: people_metrics
+        +access: public           # aggregates only, small groups suppressed
+    secure:
+      +group: people
+      +materialized: view
+      +access: public
+
+seeds:
+  saas_data_platform:
+    +quote_columns: false
+    salesforce:
+      +schema: raw_salesforce
+    netsuite:
+      +schema: raw_netsuite
+    usage:
+      +schema: raw_usage
+    hris:
+      +schema: raw_hris
+      hris_workers:
+        +column_types:
+          home_postal_code: varchar
+          manager_id: varchar
+          termination_type: varchar
+          salesforce_user_id: varchar
+    governance:
+      +schema: governance

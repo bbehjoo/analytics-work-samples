@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: salesforce
+    description: >
+      Salesforce CRM, the system of record for the customer relationship: accounts,
+      the sales team, the product catalog, opportunities (pipeline + closed deals)
+      and their line items, signed contracts, and recurring subscriptions (the ARR
+      source of truth). In this sample the tables are emulated by CSV seeds; in
+      production they would be landed by an EL tool (e.g. Fivetran) and referenced
+      here via `source()`.
+    schema: raw_salesforce
+    tables:
+      - name: accounts
+        identifier: salesforce_accounts
+        description: One row per customer/prospect account with firmographic and segmentation attributes.
+      - name: users
+        identifier: salesforce_users
+        description: Salesforce users — the sales reps who own accounts and opportunities.
+      - name: products
+        identifier: salesforce_products
+        description: Product catalog with line-of-business / family hierarchy and recurring vs one-time classification.
+      - name: opportunities
+        identifier: salesforce_opportunities
+        description: Sales opportunities — both open pipeline and closed (won/lost) deals.
+      - name: opportunity_line_items
+        identifier: salesforce_opportunity_line_items
+        description: Product-level lines on each opportunity; the grain of bookings/ACV.
+      - name: contracts
+        identifier: salesforce_contracts
+        description: Signed contracts. `external_order_ref` is the key used to reconcile to NetSuite orders.
+      - name: subscriptions
+        identifier: salesforce_subscriptions
+        description: Recurring subscription lines with effective date ranges and annual recurring amounts — the ARR source of truth.

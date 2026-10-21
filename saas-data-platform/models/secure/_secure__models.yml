@@ -1,0 +1,23 @@
+version: 2
+
+# The only way people data leaves its domain. One view per role, each generated
+# by macros/governance/secure_view.sql from the column tags on dim_employee and
+# the policy in seeds/governance/access_policy.csv. In production each schema is
+# granted to exactly one warehouse role (see governance/bigquery/).
+models:
+  - name: secure_hr__employees
+    description: "HR partner: every column, every row. HR owns this data."
+  - name: secure_finance__employees
+    description: "Finance: pay visible for budgeting; names and ids pseudonymized, emails masked; personal details, health and gender hidden."
+  - name: secure_sales_manager_emea__employees
+    description: "Sales manager, EMEA: their own EMEA sales team by name; pay, personal details and gender hidden; leave shows only as Away."
+  - name: secure_analyst__employees
+    description: "Analyst: everyone, no identities. Pseudonyms in place of names and ids, pay and age in bands, health and gender hidden."
+  - name: secure_ai_agent__department_summary
+    description: "AI agent: department metrics only, small groups suppressed. No person-level rows."
+    columns:
+      - name: avg_base_pay_band
+        description: Average base salary of the department as a $20k band; null when suppressed.
+        config: {meta: {sensitivity: confidential, category: comp}}
+  - name: secure_ai_agent__revenue_per_employee
+    description: "AI agent: company ARR per employee by month. Aggregates only."

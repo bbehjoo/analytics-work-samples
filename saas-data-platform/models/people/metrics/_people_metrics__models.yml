@@ -1,0 +1,76 @@
+version: 2
+
+# Shareable people metrics: aggregates only, with groups under
+# var('min_group_size') suppressed. Public, so analysts and the AI agent's
+# views can build on them. tests/assert_small_groups_suppressed.sql proves it.
+models:
+  - name: rpt_people__department_summary
+    description: Headcount, trailing twelve-month attrition and pay against band, by department, plus an "All departments" row.
+    config:
+      meta: {tier: certified}
+    columns:
+      - name: department
+        description: Department.
+        data_tests: [unique, not_null]
+      - name: is_suppressed
+        description: True when the department is too small to report; every metric is then null.
+        data_tests: [not_null]
+      - name: headcount
+        description: Current employees.
+      - name: attrition_rate_ttm
+        description: Exits in the last twelve months divided by average headcount.
+      - name: voluntary_attrition_rate_ttm
+        description: Voluntary exits in the last twelve months divided by average headcount.
+      - name: avg_compa_ratio
+        description: Average base salary divided by band midpoint.
+      - name: avg_base_pay_band
+        description: Average base salary as a $20k band.
+        config: {meta: {sensitivity: confidential, category: comp}}
+
+  - name: rpt_people__pay_equity
+    description: >
+      Compa-ratio by job level and gender, plus an "All" row per gender, with the
+      gap to men at the same level and the cost to close it.
+    config:
+      meta: {tier: certified}
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [job_level, gender]
+    columns:
+      - name: job_level
+        description: Job level, or All for the company-wide row.
+      - name: gender
+        description: Gender group. Aggregate only, never a person.
+        config: {meta: {sensitivity: confidential, category: demographic}}
+      - name: is_suppressed
+        description: True when the group is too small to report.
+      - name: employees
+        description: People in the group.
+      - name: avg_compa_ratio
+        description: Average compa-ratio of the group.
+      - name: gap_vs_men_pct
+        description: Percent difference in average compa-ratio versus men at the same level.
+      - name: avg_base_salary
+        description: Average base salary of the group, to the nearest $100.
+        config: {meta: {sensitivity: confidential, category: comp}}
+      - name: cost_to_close_usd
+        description: Annual cost of raising everyone in the group below the men's average compa-ratio at their level up to it.
+        config: {meta: {sensitivity: confidential, category: comp}}
+      - name: cost_to_close_pct_of_payroll
+        description: cost_to_close_usd as a percent of total current base payroll.
+
+  - name: rpt_people__revenue_per_employee
+    description: ARR, headcount and ARR per employee by month-end. Joins the revenue and people domains.
+    config:
+      meta: {tier: certified}
+    columns:
+      - name: month_end
+        description: Month-end date.
+        data_tests: [unique, not_null]
+      - name: ending_arr
+        description: Company ARR at month end (from fct_arr).
+      - name: headcount
+        description: Company headcount at month end.
+      - name: arr_per_employee
+        description: ARR divided by headcount.

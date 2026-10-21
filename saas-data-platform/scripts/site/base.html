@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='16' height='32' fill='%233a5bff'/%3E%3Crect x='16' width='16' height='32' fill='%23ef233c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=DM+Mono:wght@400;500&display=swap">
+<style>{{css}}</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">Behrang Behjoo · Data leadership</a>
+    <nav aria-label="Pages">{{nav}}</nav>
+  </div>
+</header>
+<main>
+{{content}}
+</main>
+<footer>
+  <div class="wrap">
+    <span>All data synthetic.</span>
+    <span>Built {{generated}} from <code>warehouse.duckdb</code> by <a href="{{gh}}/saas-data-platform/scripts/build_site.py">build_site.py</a>, after <code>dbt build</code> passed {{build_passed}} of {{build_total}}.</span>
+    <a href="{{repo}}">github.com/bbehjoo/analytics-work-samples</a>
+  </div>
+</footer>
+<script type="application/json" id="site-data">{{data}}</script>
+<script>{{js}}</script>
+</body>
+</html>

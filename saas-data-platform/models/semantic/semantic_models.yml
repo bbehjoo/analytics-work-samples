@@ -1,0 +1,185 @@
+version: 2
+
+# ---------------------------------------------------------------------------
+# MetricFlow semantic models. These bind the marts to a shared set of entities,
+# dimensions, and measures so metrics can be defined once and queried/grouped
+# consistently (and, with the dbt Semantic Layer, served to BI tools and AI
+# agents). Dimension-only models (account/product/sales_rep) let any fact be
+# sliced by firmographics, product hierarchy, or sales territory via the shared
+# entity keys. Validate locally with `dbt parse` + `mf validate-configs`.
+# ---------------------------------------------------------------------------
+
+semantic_models:
+
+  # ----------------------------- Dimensions -----------------------------
+  - name: account
+    description: Customer dimension — slice any revenue metric by firmographics and segment.
+    model: ref('dim_account')
+    entities:
+      - name: account
+        type: primary
+        expr: account_id
+    dimensions:
+      - name: segment
+        type: categorical
+      - name: geo_region
+        type: categorical
+      - name: industry
+        type: categorical
+      - name: division
+        type: categorical
+      - name: account_tier
+        type: categorical
+
+  - name: product
+    description: Product dimension — slice by line of business and product family.
+    model: ref('dim_product')
+    entities:
+      - name: product
+        type: primary
+        expr: product_id
+    dimensions:
+      - name: line_of_business
+        type: categorical
+      - name: product_family
+        type: categorical
+      - name: product_category
+        type: categorical
+
+  - name: sales_rep
+    description: Sales rep dimension — slice bookings by rep, team, and region.
+    model: ref('dim_sales_rep')
+    entities:
+      - name: sales_rep
+        type: primary
+        expr: user_id
+    dimensions:
+      - name: sales_region
+        type: categorical
+      - name: sales_team
+        type: categorical
+
+  # ------------------------------- Facts --------------------------------
+  - name: arr
+    description: Recurring run-rate and ARR waterfall, account x product x month.
+    model: ref('fct_arr')
+    defaults:
+      agg_time_dimension: measurement_month
+    entities:
+      - name: arr
+        type: primary
+        expr: arr_key
+      - name: account
+        type: foreign
+        expr: account_id
+      - name: product
+        type: foreign
+        expr: product_id
+    dimensions:
+      - name: measurement_month
+        type: time
+        type_params:
+          time_granularity: month
+      - name: revenue_category
+        type: categorical
+    measures:
+      - name: ending_arr
+        description: ARR run-rate on the measurement date.
+        agg: sum
+        expr: ending_arr
+      - name: beginning_arr
+        agg: sum
+        expr: beginning_arr
+      - name: net_new_arr
+        agg: sum
+        expr: arr_change
+      - name: new_logo_arr
+        agg: sum
+        expr: new_logo_arr
+      - name: cross_sell_arr
+        agg: sum
+        expr: cross_sell_arr
+      - name: upsell_arr
+        agg: sum
+        expr: upsell_arr
+      - name: downgrade_arr
+        agg: sum
+        expr: downgrade_arr
+      - name: churn_arr
+        agg: sum
+        expr: churn_arr
+
+  - name: acv
+    description: Bookings and pipeline at opportunity-line grain, by close date.
+    model: ref('fct_acv')
+    defaults:
+      agg_time_dimension: close_date
+    entities:
+      - name: acv
+        type: primary
+        expr: acv_key
+      - name: account
+        type: foreign
+        expr: account_id
+      - name: product
+        type: foreign
+        expr: product_id
+      - name: sales_rep
+        type: foreign
+        expr: owner_id
+    dimensions:
+      - name: close_date
+        type: time
+        type_params:
+          time_granularity: day
+      - name: revenue_category
+        type: categorical
+      - name: opportunity_type
+        type: categorical
+      - name: forecast_category
+        type: categorical
+      - name: deal_status
+        type: categorical
+        expr: "case when is_closed and is_won then 'won' when not is_closed then 'open' else 'lost' end"
+    measures:
+      - name: acv_amount
+        description: Annual contract value (avg annual recurring + frontloaded one-time).
+        agg: sum
+        expr: acv
+      - name: tcv_amount
+        agg: sum
+        expr: tcv
+      - name: opportunity_count
+        agg: count_distinct
+        expr: opportunity_id
+
+  - name: usage
+    description: Consumption vs entitlement, account x product x month.
+    model: ref('fct_usage')
+    defaults:
+      agg_time_dimension: usage_month
+    entities:
+      - name: usage
+        type: primary
+        expr: usage_key
+      - name: account
+        type: foreign
+        expr: account_id
+      - name: product
+        type: foreign
+        expr: product_id
+    dimensions:
+      - name: usage_month
+        type: time
+        type_params:
+          time_granularity: month
+    measures:
+      - name: consumed_value
+        agg: sum
+        expr: consumed_value
+      - name: consumed_units_total
+        agg: sum
+        expr: consumed_units
+      - name: entitled_units_total
+        agg: sum
+        expr: entitled_units

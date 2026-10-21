@@ -1,0 +1,9 @@
+category,sensitivity,example_columns,hr,finance,sales_manager_emea,analyst,ai_agent
+identity,pii,"name, employee id, manager id",full,pseudonymize,full,pseudonymize,hide
+work_contact,pii,work email,full,mask,full,mask,hide
+personal,pii,"personal email, home postal code, birth date",full,hide,hide,band,hide
+org,internal,"department, title, region",full,full,full,full,hide
+employment,confidential,"level, hire and exit dates, pay band midpoint",full,full,full,full,hide
+comp,restricted,"base pay, bonus, equity, compa-ratio",full,full,hide,band,hide
+health,restricted,leave type,full,hide,flag,hide,hide
+demographic,restricted,gender,full,hide,hide,hide,hide

@@ -1,0 +1,13 @@
+product_id,product_name,product_sku,line_of_business,product_family,product_category,is_recurring,is_active,list_unit_price
+ANL-CLOUD,Analytics Cloud,ANL-CLOUD,Core Platform,Analytics,Recurring,1,1,18000
+ANL-SELF,Analytics Self-Hosted,ANL-SELF,Core Platform,Analytics,Recurring,1,1,15000
+AUT-CLOUD,Automation Cloud,AUT-CLOUD,Core Platform,Automation,Recurring,1,1,22000
+AUT-ENT,Automation Enterprise,AUT-ENT,Core Platform,Automation,Recurring,1,1,30000
+INT-CLOUD,Integrations Hub,INT-CLOUD,Core Platform,Integrations,Recurring,1,1,16000
+INT-ENT,Integrations Enterprise,INT-ENT,Core Platform,Integrations,Recurring,1,1,28000
+SEC-AUDIT,Audit Log,SEC-AUDIT,Security & Compliance,Audit,Recurring,1,1,12000
+SEC-ACCESS,Access Governance,SEC-ACCESS,Security & Compliance,Access,Recurring,1,1,14000
+ENT-SUITE,Enterprise Suite,ENT-SUITE,Core Platform,Suite,Recurring,1,1,95000
+PS-IMPL,Implementation Services,PS-IMPL,Professional Services,Onboarding,One-Time,0,1,25000
+PS-TRAIN,Training Package,PS-TRAIN,Professional Services,Training,One-Time,0,1,8000
+PS-MIGR,Migration Services,PS-MIGR,Professional Services,Migration,One-Time,0,1,18000

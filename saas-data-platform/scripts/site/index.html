@@ -1,0 +1,96 @@
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Work samples · B2B SaaS · all data synthetic</div>
+    <h1><span class="line">Every number <span class="blue">reconciles.</span></span> <span class="line">Every column <span class="red">has a rule.</span></span></h1>
+    <p class="lede">One B2B SaaS company's data, end to end. The revenue numbers, the people data, and the rules for who gets to see what. Modeled, tested, governed and explained in one repo.</p>
+    <div class="ctas">
+      <a class="btn primary" href="#who">See who sees what</a>
+      <a class="btn" href="revenue.html">Revenue review</a>
+      <a class="btn" href="people.html">People review</a>
+      <a class="btn" href="{{repo}}">The code</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat blue"><div class="v">{{ending_arr}}</div><div class="l">ARR, reconciled to the cent by a test on every build</div></div>
+    <div class="stat ink"><div class="v">{{nrr}}</div><div class="l">Net revenue retention, one definition everywhere</div></div>
+    <div class="stat green"><div class="v">{{pii_leaks}}</div><div class="l">PII leaks, proven by {{gov_test_count}} tests on every build</div></div>
+    <div class="stat red"><div class="v">{{owned_pct}}</div><div class="l">of {{models}} models with a named owner, checked in CI</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">The whole stack</div>
+    <h2>Four sources in. Five kinds of people out. Rules in between.</h2>
+    <p class="section-lede">Every column is tagged where it enters the warehouse. The tag decides what each person, and each AI agent, can see.</p>
+    <div class="flow">
+      <div class="col">
+        <h3>Sources</h3>
+        <div class="chip"><i class="dot confidential"></i><div>Salesforce<small>CRM: accounts, deals</small></div></div>
+        <div class="chip"><i class="dot confidential"></i><div>NetSuite<small>ERP: orders, invoices</small></div></div>
+        <div class="chip"><i class="dot"></i><div>Product usage<small>consumption by month</small></div></div>
+        <div class="chip"><i class="dot restricted"></i><div>HRIS<small>people, pay, leave</small></div></div>
+      </div>
+      <div class="col">
+        <h3>Models</h3>
+        <div class="chip"><i class="dot confidential"></i><div>Revenue marts<small>ARR, bookings, reconciliation</small></div></div>
+        <div class="chip"><i class="dot restricted"></i><div>People marts<small>headcount, attrition, pay equity</small></div></div>
+        <div class="chip"><i class="dot"></i><div>Semantic layer<small>{{metric_count}} metrics, defined once</small></div></div>
+      </div>
+      <div class="col">
+        <h3>Guardrails</h3>
+        <div class="chip guard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/></svg><div>Classify every column</div></div>
+        <div class="chip guard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><path d="m3 3 18 18"/></svg><div>Mask personal data</div></div>
+        <div class="chip guard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4Z"/></svg><div>Filter rows by role</div></div>
+        <div class="chip guard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 4v6m-3-3h6"/></svg><div>Hide groups under 5</div></div>
+      </div>
+      <div class="col">
+        <h3>Who uses it</h3>
+        <div class="chip"><div>Execs and Finance<small>revenue, and pay for budgeting</small></div></div>
+        <div class="chip"><div>Sales managers<small>their own team only</small></div></div>
+        <div class="chip"><div>HR partners<small>everything in People</small></div></div>
+        <div class="chip"><div>Analysts<small>no identities, pay in bands</small></div></div>
+        <div class="chip"><div>AI agents<small>aggregates only</small></div></div>
+      </div>
+    </div>
+    <div class="legend" aria-label="Sensitivity classes">
+      <span><i class="dot"></i><b>Internal</b> product, usage</span>
+      <span><i class="dot confidential"></i><b>Confidential</b> customer revenue</span>
+      <span><i class="dot pii"></i><b>PII</b> names, emails, birth dates</span>
+      <span><i class="dot restricted"></i><b>Restricted</b> pay, health, demographics</span>
+    </div>
+  </div>
+</section>
+
+{{who_block}}
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">What the data says</div>
+    <h2>Every chart ends in a decision.</h2>
+    <p class="section-lede">Four findings from the two reviews, each with what it means and what to do about it.</p>
+    <div class="tiles">
+      <a class="tile" href="revenue.html#growth"><span class="v red">{{churn_2025}}</span><p>of churn in {{last_year}}, triple the year before. Expansion is covering it.</p><span class="go">Revenue review →</span></a>
+      <a class="tile" href="revenue.html#recon"><span class="v">{{missing_ns}}</span><p>of signed contracts never reached the ERP.</p><span class="go">Revenue review →</span></a>
+      <a class="tile" href="people.html#efficiency"><span class="v blue">{{rpe_end}}</span><p>ARR per employee, down from a {{rpe_peak}} peak as hiring outran revenue.</p><span class="go">People review →</span></a>
+      <a class="tile" href="people.html#pay"><span class="v red">{{gap_l4}}</span><p>pay gap for women at L4, hidden by an equal company average.</p><span class="go">People review →</span></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">How I run data</div>
+    <h2>Five rules, each with a receipt in the code.</h2>
+    <div class="prins">
+      <div class="prin"><h3>One number, one definition</h3><p>ARR, NRR and {{metric_count}} metrics are defined once, so every dashboard and every AI agent gets the same answer.</p><a href="{{gh}}/saas-data-platform/models/semantic/metrics.yml">models/semantic/metrics.yml</a></div>
+      <div class="prin"><h3>The numbers reconcile</h3><p>The ARR waterfall balances to the cent, and every CRM contract is matched to its ERP order.</p><a href="{{gh}}/saas-data-platform/tests/assert_arr_waterfall_integrity.sql">tests/assert_arr_waterfall_integrity.sql</a></div>
+      <div class="prin"><h3>Private by default</h3><p>Every column about a person is classified. Pay, health and gender never reach analysts or AI agents, and tests prove it.</p><a href="{{gh}}/saas-data-platform/seeds/governance/access_policy.csv">seeds/governance/access_policy.csv</a></div>
+      <div class="prin"><h3>Every table has an owner</h3><p>Every model belongs to a named team. Certified tables have enforced contracts. The build fails if either slips.</p><a href="{{gh}}/saas-data-platform/scripts/check_governance.py">scripts/check_governance.py</a></div>
+      <div class="prin"><h3>Every chart ends in a decision</h3><p>Each finding says what it is, why it matters and what to do next.</p><a href="{{repo}}/tree/main/saas-data-platform/reports">saas-data-platform/reports/</a></div>
+    </div>
+  </div>
+</section>

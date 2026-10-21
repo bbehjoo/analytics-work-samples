@@ -1,0 +1,21 @@
+version: 2
+
+# Every model belongs to exactly one group, and every group has a named owner.
+# scripts/check_governance.py fails the build if a model is left without one.
+groups:
+  - name: revenue
+    owner:
+      name: Revenue Analytics
+      email: revenue-analytics@saasco.com
+    description: >
+      Bookings, ARR, usage and the CRM-to-ERP reconciliation. Customer data;
+      confidential, no personal data.
+
+  - name: people
+    owner:
+      name: People Analytics
+      email: people-analytics@saasco.com
+    description: >
+      HR data: identity, pay, leave and demographics. Restricted. Raw and core
+      models are private to this group; other teams get role-scoped secure views
+      or suppressed aggregates.

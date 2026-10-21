@@ -1,0 +1,139 @@
+version: 2
+
+# Every column that describes a person carries config.meta:
+#   sensitivity  internal | confidential | pii | restricted   (the colour)
+#   category     its row in seeds/governance/access_policy.csv (what each role gets)
+models:
+  - name: stg_hris__workers
+    description: Workers, typed and renamed. Private to People Analytics.
+    columns:
+      - name: worker_id
+        description: HRIS worker id.
+        config: {meta: {sensitivity: pii, category: identity}}
+        data_tests: [unique, not_null]
+      - name: employee_name
+        description: Full name.
+        config: {meta: {sensitivity: pii, category: identity}}
+      - name: work_email
+        description: Company email address.
+        config: {meta: {sensitivity: pii, category: work_contact}}
+        data_tests: [unique, not_null]
+      - name: personal_email
+        description: Personal email address.
+        config: {meta: {sensitivity: pii, category: personal}}
+      - name: home_postal_code
+        description: Home postal code.
+        config: {meta: {sensitivity: pii, category: personal}}
+      - name: date_of_birth
+        description: Date of birth.
+        config: {meta: {sensitivity: pii, category: personal}}
+      - name: gender
+        description: Self-reported gender. Used only for pay-equity analysis.
+        config: {meta: {sensitivity: restricted, category: demographic}}
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Woman', 'Man', 'Non-binary']
+      - name: department
+        description: Department.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: job_title
+        description: Job title.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: job_level
+        description: Job level, L1 to L7.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: region
+        description: "Region: NA, EMEA, APAC, LATAM."
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: country
+        description: Work country.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: manager_id
+        description: Worker id of the manager.
+        config: {meta: {sensitivity: pii, category: identity}}
+      - name: hire_date
+        description: Hire date.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: termination_date
+        description: Last day, if the person has left.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: termination_type
+        description: Voluntary or Involuntary.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: salesforce_user_id
+        description: Salesforce user id, for the sales reps.
+        config: {meta: {sensitivity: pii, category: identity}}
+
+  - name: stg_hris__compensation
+    description: Current pay per worker. Private to People Analytics.
+    columns:
+      - name: worker_id
+        description: HRIS worker id.
+        config: {meta: {sensitivity: pii, category: identity}}
+        data_tests: [unique, not_null]
+      - name: effective_date
+        description: Date the current pay took effect.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: base_salary
+        description: Annual base salary, USD.
+        config: {meta: {sensitivity: restricted, category: comp}}
+        data_tests: [not_null]
+      - name: bonus_target_pct
+        description: Target bonus as a share of base.
+        config: {meta: {sensitivity: restricted, category: comp}}
+      - name: equity_grant_usd
+        description: Equity grant value, USD.
+        config: {meta: {sensitivity: restricted, category: comp}}
+
+  - name: stg_hris__comp_bands
+    description: Pay bands by level and region. Private to People Analytics.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [job_level, region]
+    columns:
+      - name: job_level
+        description: Job level.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: region
+        description: Region.
+        config: {meta: {sensitivity: internal, category: org}}
+      - name: band_min
+        description: Band minimum, USD.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: band_mid
+        description: Band midpoint, USD.
+        config: {meta: {sensitivity: confidential, category: employment}}
+      - name: band_max
+        description: Band maximum, USD.
+        config: {meta: {sensitivity: confidential, category: employment}}
+
+  - name: stg_hris__leave
+    description: Leaves of absence. Private to People Analytics.
+    columns:
+      - name: leave_id
+        description: Leave id. A leave record says someone took leave, so it is health information too.
+        config: {meta: {sensitivity: restricted, category: health}}
+        data_tests: [unique, not_null]
+      - name: worker_id
+        description: HRIS worker id.
+        config: {meta: {sensitivity: pii, category: identity}}
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_hris__workers')
+                field: worker_id
+      - name: leave_type
+        description: Medical, Parental or Personal. Health information.
+        config: {meta: {sensitivity: restricted, category: health}}
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Medical', 'Parental', 'Personal']
+      - name: start_date
+        description: First day of leave.
+        config: {meta: {sensitivity: restricted, category: health}}
+      - name: end_date
+        description: Last day of leave.
+        config: {meta: {sensitivity: restricted, category: health}}

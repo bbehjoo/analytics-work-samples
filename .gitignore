@@ -1,0 +1,19 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# dbt / DuckDB build artifacts
+*.duckdb
+*.duckdb.wal
+**/target/
+**/dbt_packages/
+**/logs/
+.user.yml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

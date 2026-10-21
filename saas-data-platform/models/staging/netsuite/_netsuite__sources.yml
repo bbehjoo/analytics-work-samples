@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: netsuite
+    description: >
+      NetSuite ERP, the system of record for finance: customers, items, sales
+      orders, and invoices. Orders are linked back to Salesforce contracts via a
+      shared `external_order_ref`, and customers/items carry Salesforce external
+      IDs so the two systems can be conformed. Emulated by CSV seeds in this sample.
+    schema: raw_netsuite
+    tables:
+      - name: customers
+        identifier: netsuite_customers
+        description: NetSuite customers; `sfdc_account_external_id` bridges to the Salesforce account.
+      - name: items
+        identifier: netsuite_items
+        description: NetSuite items; `sfdc_product_external_id` bridges to the Salesforce product.
+      - name: sales_orders
+        identifier: netsuite_sales_orders
+        description: Sales order headers. `external_order_ref` reconciles to the Salesforce contract.
+      - name: sales_order_lines
+        identifier: netsuite_sales_order_lines
+        description: Sales order line items by item.
+      - name: invoices
+        identifier: netsuite_invoices
+        description: Invoice headers linked to a sales order; drives billed-vs-ordered coverage.
+      - name: invoice_lines
+        identifier: netsuite_invoice_lines
+        description: Invoice line items by item.

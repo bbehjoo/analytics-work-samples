@@ -1,0 +1,6 @@
+role,label,row_filter,description
+hr,HR partner,,Owns people data and sees all of it.
+finance,Finance,,Sees pay for budgeting; names pseudonymized; health and demographics hidden.
+sales_manager_emea,"Sales manager, EMEA",department = 'Sales' and region = 'EMEA',Sees their own EMEA sales team by name; pay and leave reasons hidden.
+analyst,Analyst,,Sees everyone without identities; pay and age in bands.
+ai_agent,AI agent,,No person-level rows; suppressed aggregates only.
