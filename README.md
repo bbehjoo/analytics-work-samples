@@ -1,107 +1,78 @@
-# Data Leadership Work Samples · Behrang Behjoo
+# Data Leadership Work Samples — Behrang Behjoo
 
 [![build](https://github.com/bbehjoo/analytics-work-samples/actions/workflows/ci.yml/badge.svg)](https://github.com/bbehjoo/analytics-work-samples/actions/workflows/ci.yml)
 
-**One B2B SaaS company's data, end to end:** the revenue numbers, the people data,
-and the rules for who gets to see what. Modeled, tested, governed and explained in
-one repo. Everything here is synthetic or my own published work; nothing proprietary.
-
-**[See it live →](https://bbehjoo.github.io/analytics-work-samples/)**
-&nbsp;·&nbsp; [Revenue report](https://bbehjoo.github.io/analytics-work-samples/revenue.html)
-&nbsp;·&nbsp; [People report](https://bbehjoo.github.io/analytics-work-samples/people.html)
-&nbsp;·&nbsp; [Who sees what](https://bbehjoo.github.io/analytics-work-samples/access.html)
+Two samples of how I build and own data: models, governance, and the decisions
+they support. Everything here is **synthetic or my own published work** — nothing
+proprietary.
 
 ---
 
-## How I run data, with receipts
+## 1. [`saas-data-platform/`](saas-data-platform/) — B2B SaaS data platform: revenue, people, and who sees what
 
-| Principle | What it means here | Proof in the code |
-|---|---|---|
-| **One number, one definition** | ARR, NRR and ~20 metrics are defined once in a semantic layer, so every dashboard and every AI agent gets the same answer. | [`metrics.yml`](saas-data-platform/models/semantic/metrics.yml) |
-| **The numbers reconcile** | The ARR waterfall balances to the cent, and every CRM contract is matched to its ERP order. | [`assert_arr_waterfall_integrity.sql`](saas-data-platform/tests/assert_arr_waterfall_integrity.sql) |
-| **Private by default** | Every column about a person is classified. One policy file decides what HR, Finance, a sales manager, an analyst and an AI agent each see. Pay, health and gender never reach analysts or AI, and tests prove it. | [`access_policy.csv`](saas-data-platform/seeds/governance/access_policy.csv) · [GOVERNANCE.md](saas-data-platform/GOVERNANCE.md) |
-| **Every table has an owner** | Every model belongs to a named team. Certified tables have enforced contracts. CI fails if ownership or classification slips. | [`groups.yml`](saas-data-platform/models/groups.yml) · [`check_governance.py`](saas-data-platform/scripts/check_governance.py) |
-| **Every chart ends in a decision** | Each finding says what it is, why it matters and what to do next. | [Revenue](saas-data-platform/reports/revenue_insights_report.md) · [People](saas-data-platform/reports/people_insights_report.md) |
+A production-shaped **dbt** project that models one B2B SaaS company end to end:
+the revenue stack — **Salesforce** (CRM) + **NetSuite** (ERP) + product usage — and
+the **HRIS** (people, pay, leave), with a **MetricFlow semantic layer**, governed
+access to personal data, data tests, and full documentation. It runs locally on
+**DuckDB** with generated data (`dbt build` → `PASS=197`), the SQL is
+BigQuery-portable, and CI rebuilds and re-tests everything on every push.
 
----
+It mirrors the revenue marts I've built in B2B SaaS, rebuilt from scratch on
+synthetic data, plus the people data and access controls a data leader is
+accountable for.
 
-## 1. [`saas-data-platform/`](saas-data-platform/): the whole stack in one dbt project
+📊 **[Live site →](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🧭 **[Lineage, layers & ERDs →](https://bbehjoo.github.io/analytics-work-samples/architecture.html)** &nbsp;·&nbsp; 🗺️ **[Data model diagrams →](saas-data-platform/DATA_MODEL.md)** &nbsp;·&nbsp; 🔐 **[Governance →](saas-data-platform/GOVERNANCE.md)**
 
-- **Revenue.** Salesforce (CRM) + NetSuite (ERP) + product usage, modeled into a star
-  schema: ARR waterfall, bookings and pipeline, retention, and a CRM-to-ERP
-  reconciliation that surfaces real finance discrepancies. MetricFlow semantic layer
-  on top.
-- **People.** An HRIS (names, pay, leave, gender) modeled into headcount, attrition,
-  pay equity and ARR per employee, the metric that joins the two domains.
-- **Governance.** Four sensitivity classes. Role-scoped views generated from one
-  policy file. Groups under 5 suppressed. Raw HR data that other teams' models can't
-  even reference. The same rules mapped to BigQuery grants, row access policies and
-  policy tags for production.
-- **Quality.** 132 data tests, 8 of them "proof" tests (the waterfall balances, the
-  reconciliation is complete, nothing leaks), enforced contracts, and CI on every push.
+**What it demonstrates**
+- **Layered modeling** — sources → staging → intermediate → marts (dims + facts) →
+  serving, the way a real warehouse is organized, with every layer tested.
+- **Hard revenue logic done correctly** — an **ARR waterfall** (new logo / cross-sell
+  / upsell / downgrade / churn / scheduled) that **reconciles to the cent**, ACV vs
+  ARR modeled as genuinely distinct facts, and a **Salesforce↔NetSuite
+  reconciliation** that surfaces real finance discrepancies.
+- **Sensitive data governed by design** — every column about a person (PII, pay,
+  health/PHI, demographics) is classified; **one policy file** generates a secure
+  view per role (HR, Finance, Sales manager, Analyst, AI agent) with masking,
+  pseudonymization, banding and row-level filters; groups under 5 are suppressed.
+- **Proof, not promises** — 132 dbt tests, including singular "proof" tests that
+  assert the waterfall balances, the reconciliation is complete, **no PII leaks**
+  through any view, and pay, health and gender never reach analysts or AI.
+- **Ownership** — every model has a named owning team, certified models have
+  **enforced contracts**, and a governance check fails CI if ownership or
+  classification slips. The same access rules map to BigQuery grants, row access
+  policies and policy tags for production.
+- **A semantic + documentation layer** built for self-serve and **AI/MCP**
+  consumption — every model and column described, metrics defined once, and AI
+  agents limited to governed aggregates.
+- **Communication** — a revenue review and a people review as a
+  [live visual site](https://bbehjoo.github.io/analytics-work-samples/) and in
+  [markdown](saas-data-platform/reports/), framing each finding as
+  *what it is / why it matters / what to do*.
 
-It runs locally on DuckDB with generated data: `dbt build` → `PASS=197`.
+→ See [saas-data-platform/README.md](saas-data-platform/README.md) for the
+architecture, the ARR/ACV definitions, the access model, and how to run it.
 
-**What the data says** (each with what to do, in the reports):
-
-- ARR grew to **$82.1M**. Expansion now drives growth, but churn tripled to **$8.3M** in 2025.
-- **$2.2M of signed contracts never reached the ERP**, a close-the-books risk.
-- ARR per employee peaked at **$220k**, then slipped to $199k as hiring outpaced revenue.
-- Women and men are paid the same on average. **At L4, women are paid 6.4% less**
-  against the same pay band. Closing it costs about $345k a year.
-
-→ [How the platform is built](saas-data-platform/README.md) ·
-[Who sees what, and how it's proven](saas-data-platform/GOVERNANCE.md) ·
-[ERD & lineage](saas-data-platform/DATA_MODEL.md)
-
-## 2. [`fight-algorithm-samples/`](fight-algorithm-samples/): beyond SQL
+## 2. [`fight-algorithm-samples/`](fight-algorithm-samples/) — beyond SQL
 
 Curated, unmodified files from [**thefightalgorithm.com**](https://thefightalgorithm.com),
-an independent MMA analytics publication I build and run end to end: a Python + DuckDB
-pipeline over ~8,500 UFC fights powering an interactive Next.js site.
+an independent MMA analytics publication I build and run: a Python + DuckDB pipeline
+over ~8,500 UFC fights powering an interactive Next.js site.
 
-**What it shows**: a scikit-learn **stacking ensemble** with calibration and
+**What it demonstrates** — a scikit-learn **stacking ensemble** with calibration and
 cross-validation, **complex analytical SQL** (window functions, self-joins), and a
-typed **Monte Carlo simulation engine** in TypeScript. Statistics, ML and
+typed **Monte Carlo simulation engine** in TypeScript — i.e. statistics/ML and
 procedural code beyond SQL, plus a product I own from pipeline to published page.
 
 → See [fight-algorithm-samples/README.md](fight-algorithm-samples/README.md).
 
 ---
 
-## Repo map
-
-```
-.
-├── saas-data-platform/        the dbt project: revenue + people + governance
-│   ├── models/                staging → intermediate → marts · people · secure views
-│   ├── seeds/governance/      access_policy.csv, roles.csv   ← who sees what
-│   ├── macros/governance/     secure_view(): turns the policy into SQL
-│   ├── tests/                 proof tests: reconciliation and governance
-│   ├── governance/bigquery/   production reference: grants, row policies, policy tags
-│   ├── scripts/               data generators, governance check, site builder
-│   └── reports/               revenue and people insight reports
-├── docs/                      the published site (GitHub Pages)
-├── fight-algorithm-samples/   ML, analytical SQL, Monte Carlo simulation
-└── .github/workflows/         CI: dbt build + governance check on every push
-```
-
-## Run it
-
-```bash
-cd saas-data-platform
-pip install -r requirements.txt
-dbt deps && dbt build                  # every model and every test
-python scripts/check_governance.py     # owners, classification, proof tests
-```
-
 ### A note on the data
-
-Everything in the dbt project is **synthetic**, generated deterministically by
+All data in the dbt project is **synthetic**, generated deterministically by
 [`generate_seeds.py`](saas-data-platform/scripts/generate_seeds.py) (Salesforce,
-NetSuite, usage) and
+NetSuite and usage records, with reconciliation discrepancies intentionally seeded
+so the recon mart has something to find) and
 [`generate_people_seeds.py`](saas-data-platform/scripts/generate_people_seeds.py)
-(HRIS). The people are invented; names, emails and pay come from a fixed random seed.
-Findings like the reconciliation discrepancies and the L4 pay gap are seeded on
-purpose, so the models have something real to find. The Fight Algorithm files are my
-own published work.
+(HRIS records for invented people, with a pay gap and an attrition hotspot seeded
+so the people reports have something to find). The Fight Algorithm files are my own
+published work.

@@ -1,79 +1,75 @@
-<section class="hero page">
-  <div class="wrap">
-    <div class="eyebrow">Revenue review · Salesforce + NetSuite + usage</div>
-    <h1><span class="line">Growth is shifting to <span class="blue">expansion.</span></span> <span class="line">Churn <span class="red">tripled.</span></span></h1>
-    <p class="lede">A year-end business review built on the revenue marts. Every figure is computed from <code>fct_arr</code>, <code>fct_acv</code>, <code>fct_usage</code> and the reconciliation mart each time the site is built.</p>
-  </div>
-</section>
+<div class="rwrap">
+  <span class="pill">Work sample · synthetic data · generated from the dbt marts</span>
+  <h1 class="rh1">Revenue Insights — Year-End Business Review</h1>
+  <div class="rsub">A visual read of the Salesforce + NetSuite revenue marts. Every number is computed from <code>fct_arr</code>, <code>fct_acv</code>, <code>fct_usage</code> and <code>rpt_contract_to_netsuite_recon</code> each time the site is built.</div>
 
-<div class="wrap">
-  <div class="stats six">
-    <div class="stat blue"><div class="v">{{ending_arr}}</div><div class="l">Ending ARR, December {{last_year}}</div></div>
-    <div class="stat ink"><div class="v">{{nrr}}</div><div class="l">Net revenue retention</div></div>
-    <div class="stat gray"><div class="v">{{grr}}</div><div class="l">Gross revenue retention</div></div>
-    <div class="stat green"><div class="v">{{fy_bookings}}</div><div class="l">Bookings ACV, FY{{last_year}}</div></div>
-    <div class="stat yellow"><div class="v">{{pipeline}}</div><div class="l">Open pipeline ACV, {{pipeline_n}} deals</div></div>
-    <div class="stat red"><div class="v">{{at_risk}}</div><div class="l">At risk in the CRM-to-ERP reconciliation</div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">{{ending_arr}}</div><div class="l">Ending ARR</div><div class="s">Dec {{last_year}} run-rate</div></div>
+    <div class="kpi"><div class="v">{{nrr}}</div><div class="l">Net Revenue Retention</div><div class="s">period approximation</div></div>
+    <div class="kpi"><div class="v">{{grr}}</div><div class="l">Gross Revenue Retention</div><div class="s">period approximation</div></div>
+    <div class="kpi"><div class="v">{{fy_bookings}}</div><div class="l">Bookings ACV (FY{{last_year}})</div><div class="s">closed-won</div></div>
+    <div class="kpi"><div class="v">{{pipeline}}</div><div class="l">Open Pipeline ACV</div><div class="s">{{pipeline_n}} opportunities</div></div>
+    <div class="kpi"><div class="v">{{at_risk}}</div><div class="l">$ at risk (recon)</div><div class="s">Salesforce vs NetSuite</div></div>
+  </div>
+
+  <div class="card" id="growth">
+    <h2>1 · ARR growth &amp; the waterfall</h2>
+    <div class="src">Source: <code>fct_arr</code> · the company ARR bridge balances to the cent (enforced by a dbt test)</div>
+    <div class="rgrid">
+      <div class="chart" data-chart="arr_trend"></div>
+      <div class="rnote">
+        <h3>What it is</h3>
+        <p>ARR grew from {{arr_first}} to <span class="tag navy">{{ending_arr}}</span> over three years.</p>
+        <h3>Why it matters</h3>
+        <p>The engine is shifting from new logo to <span class="tag good">expansion</span> ({{exp_first}} to {{exp_last}} a year), but <span class="tag bad">churn is accelerating</span> ({{churn_prev}} to {{churn_2025}}). Net new ARR is holding only because expansion is covering it.</p>
+        <h3>What to do</h3>
+        <p>Pressure-test the new-logo top of funnel and stand up a churn early warning from §3. Two points of gross retention are worth about {{grr_2pts}} a year at this scale.</p>
+      </div>
+    </div>
+    <div class="chart-title" style="margin-top:18px">ARR movement by year ($M)</div>
+    <div class="swatches"><span><i class="dot" style="background:#2f6db0"></i>New logo</span><span><i class="dot" style="background:#1f9d8f"></i>Expansion</span><span><i class="dot" style="background:#d99a2b"></i>Downgrade</span><span><i class="dot" style="background:#c0492b"></i>Churn</span></div>
+    <div class="chart" data-chart="arr_bridge"></div>
+  </div>
+
+  <div class="card" id="bookings">
+    <h2>2 · Bookings &amp; pipeline — the sales view</h2>
+    <div class="src">Source: <code>fct_acv</code> (opportunity-line grain) joined to <code>dim_account</code></div>
+    <div class="rgrid" style="align-items:start">
+      <div><div class="chart-title">Bookings ACV by category, all years</div><div class="chart" data-chart="bookings_cat" style="min-height:0"></div></div>
+      <div><div class="chart-title">Bookings ACV by segment</div><div class="chart" data-chart="bookings_seg" style="min-height:0"></div></div>
+    </div>
+    <div class="rnote" style="margin-top:16px">
+      <p><b>Renewals are the largest bookings category</b> — protecting the renewal base matters as much as new sales. Mid-Market is the bookings volume engine; {{pipeline}} of open pipeline is the forward indicator against the new-logo slowdown above.</p>
+    </div>
+  </div>
+
+  <div class="card" id="usage">
+    <h2>3 · Usage vs entitlement — a quantified expansion &amp; churn list</h2>
+    <div class="src">Source: <code>fct_usage</code> (consumption vs the subscription in force that month)</div>
+    <div class="rgrid">
+      <div class="chart" data-chart="usage_split" style="min-height:0"></div>
+      <div class="rnote">
+        <h3>Why it matters</h3>
+        <p><span class="tag good">{{over_pct}}</span> of subscription-months consume <b>over</b> their entitlement — a warm, evidence-backed upsell list — while <span class="tag bad">{{under_pct}}</span> are <b>under-utilized</b> ahead of renewal (churn risk).</p>
+        <h3>What to do</h3>
+        <p>Route over-entitlement accounts to AMs as expansion plays; route under-utilized accounts near renewal to CS.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="recon">
+    <h2>4 · Finance hygiene — Salesforce ↔ NetSuite reconciliation</h2>
+    <div class="src">Source: <code>rpt_contract_to_netsuite_recon</code> · a closed-loop dbt test asserts these counts</div>
+    <div class="rgrid">
+      <div><div class="chart-title">$ at risk by discrepancy · number of records</div><div class="chart" data-chart="recon" style="min-height:0"></div></div>
+      <div class="rnote">
+        <h3>What it is</h3>
+        <p>Every contract matched to its NetSuite order and invoices, with the disagreements bucketed.</p>
+        <h3>Why it matters</h3>
+        <p><b>Missing-in-NetSuite is the biggest exposure</b> at {{missing_ns}}: contracted revenue with no ERP order — a close-the-books and revenue-recognition risk, not a rounding nuisance.</p>
+        <h3>What to do</h3>
+        <p>Work the {{missing_n}} missing and {{orphan_n}} orphan records first; auto-clear currency rounding with a materiality threshold; make this a standing month-end check.</p>
+      </div>
+    </div>
   </div>
 </div>
-
-<section>
-  <div class="wrap">
-    <article class="finding" id="growth">
-      <div class="eyebrow">1 · The ARR bridge</div>
-      <h2>ARR reached {{ending_arr}}. Expansion now drives the growth.</h2>
-      <div class="chart-title">ARR by month</div>
-      <div class="chart" data-chart="arr_trend"></div>
-      <div class="chart-title">What moved ARR each year</div>
-      <div class="swatches"><span><i class="dot confidential"></i>New logo</span><span><i class="dot" style="background:#12a150"></i>Expansion</span><span><i class="dot pii"></i>Downgrade</span><span><i class="dot restricted"></i>Churn</span></div>
-      <div class="chart" data-chart="arr_bridge"></div>
-      <div class="wwd">
-        <div><h4>What it is</h4><p>The company ARR waterfall: how each year's beginning ARR becomes ending ARR through new logo, expansion, downgrade and churn.</p></div>
-        <div><h4>Why it matters</h4><p>Expansion grew from {{exp_first}} to {{exp_last}} a year while new logo fell from {{nl_first}} to {{nl_last}}. Churn went from {{churn_prev}} to {{churn_2025}}. Net new ARR held roughly steady only because expansion is covering the churn.</p></div>
-        <div class="do"><h4>What to do</h4><p>Pressure-test the new-logo funnel: is it volume or win rate? Stand up a churn early warning from the usage signal below. Two points of gross retention are worth about {{grr_2pts}} a year at this scale.</p></div>
-      </div>
-      <div class="src">Source: fct_arr · the waterfall balances to the cent every month, enforced by assert_arr_waterfall_integrity</div>
-    </article>
-
-    <article class="finding" id="usage">
-      <div class="eyebrow">2 · Usage against entitlement</div>
-      <h2>{{over_pct}} of subscriptions use more than they pay for.</h2>
-      <div class="chart-title">Subscription-months by utilization</div>
-      <div class="chart" data-chart="usage_split" style="min-height:0"></div>
-      <div class="wwd">
-        <div><h4>What it is</h4><p>Each month's consumption compared with the entitlement in force that month.</p></div>
-        <div><h4>Why it matters</h4><p>Expansion is now the main growth lever, and this is the list that feeds it: accounts already using more than they bought. The {{under_pct}} using less than half is the churn risk ahead of renewal.</p></div>
-        <div class="do"><h4>What to do</h4><p>Route over-entitlement accounts to account managers as expansion plays. Route under-used accounts near renewal to Customer Success.</p></div>
-      </div>
-      <div class="src">Source: fct_usage</div>
-    </article>
-
-    <article class="finding" id="bookings">
-      <div class="eyebrow">3 · Bookings and pipeline</div>
-      <h2>Renewals are the biggest source of bookings.</h2>
-      <div class="charts2">
-        <div><div class="chart-title">Closed-won bookings ACV by type, all years</div><div class="chart" data-chart="bookings_cat" style="min-height:0"></div></div>
-        <div><div class="chart-title">By segment</div><div class="chart" data-chart="bookings_seg" style="min-height:0"></div></div>
-      </div>
-      <div class="wwd">
-        <div><h4>What it is</h4><p>ACV at deal-line grain by close date. Unlike ARR, it counts one-time services and renewals.</p></div>
-        <div><h4>Why it matters</h4><p>Protecting the renewal base matters as much as new sales. Mid-Market is the volume engine, and {{pipeline}} of open pipeline is the forward signal against the new-logo slowdown.</p></div>
-        <div class="do"><h4>What to do</h4><p>Track pipeline coverage against the new-logo gap, and watch renewal bookings as the early signal for churn.</p></div>
-      </div>
-      <div class="src">Source: fct_acv joined to dim_account</div>
-    </article>
-
-    <article class="finding" id="recon">
-      <div class="eyebrow">4 · Finance hygiene</div>
-      <h2>{{missing_ns}} of signed contracts never reached the ERP.</h2>
-      <div class="chart-title">Dollars at risk by discrepancy · number of records</div>
-      <div class="chart" data-chart="recon" style="min-height:0"></div>
-      <div class="wwd">
-        <div><h4>What it is</h4><p>Every Salesforce contract matched to its NetSuite order and invoices, with each disagreement put in a bucket.</p></div>
-        <div><h4>Why it matters</h4><p>Contracted revenue with no ERP order is a close-the-books and revenue-recognition risk, not a rounding error.</p></div>
-        <div class="do"><h4>What to do</h4><p>Work the {{missing_n}} missing and {{orphan_n}} orphan records first. Auto-clear currency rounding under a materiality threshold. Make this a standing month-end check.</p></div>
-      </div>
-      <div class="src">Source: rpt_contract_to_netsuite_recon · a closed-loop test asserts it finds exactly the discrepancies seeded in the source data</div>
-    </article>
-  </div>
-</section>

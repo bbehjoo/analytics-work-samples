@@ -40,7 +40,18 @@ PAGES = [  # file, nav label, <title>, description
      "ARR per employee, attrition and pay equity from aggregates only, with small groups suppressed."),
     ("access.html", "Who sees what", "Who Sees What · Behrang Behjoo",
      "Column classification, one access policy, role-scoped views and the tests that prove nothing leaks."),
+    ("architecture.html", "How it's built", "How It's Built · Behrang Behjoo",
+     "Every model from raw table to report, with lineage, ERDs and the tests at each layer, generated from dbt's manifest."),
 ]
+LAYERS = [  # key, label, what lives there, materialization
+    ("source", "Sources", "raw tables, landed as CSV seeds", "seed tables"),
+    ("staging", "Staging", "one view per source table: rename and recast, nothing else", "views"),
+    ("intermediate", "Intermediate", "the business logic: ACV math, the ARR spine and waterfall, the CRM-to-ERP match", "views"),
+    ("mart", "Marts", "one grain per table: dimensions and facts, contracts on the certified ones", "tables"),
+    ("serve", "Serving", "what people and AI query: secure views per role, suppressed aggregates, the semantic layer", "views and tables"),
+]
+SYSTEM = {"raw_salesforce": "Salesforce", "raw_netsuite": "NetSuite", "raw_usage": "Usage", "raw_hris": "HRIS",
+          "governance": "Policy"}
 ROLE_ORDER = ["hr", "finance", "sales_manager_emea", "analyst", "ai_agent"]
 CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>'
 
@@ -118,7 +129,8 @@ def values_and_claims(d):
         "cs_attrition": pct(cs["attrition_rate_ttm"], 0),
         "rpe_peak": k(peak["arr_per_employee"]), "rpe_end": k(end["arr_per_employee"]), "rpe_peak_month": month,
         "h2_hires": end["headcount"] - peak["headcount"], "h2_arr": m(end["ending_arr"] - peak["ending_arr"]),
-        "gap_l4": f'{eq[("L4", "Woman")]["gap_vs_men_pct"]:.1f}%', "gap_l6": f'{eq[("L6", "Woman")]["gap_vs_men_pct"]:.1f}%',
+        "gap_l4": f'{eq[("L4", "Woman")]["gap_vs_men_pct"]:.1f}%', "gap_l4_abs": f'{abs(eq[("L4", "Woman")]["gap_vs_men_pct"]):.1f}%',
+        "arr_first": f'${R["arr_trend"][0]["arr"]:.1f}M', "proof_count": len(proofs), "gap_l6": f'{eq[("L6", "Woman")]["gap_vs_men_pct"]:.1f}%',
         "avg_w": f'${eq[("All", "Woman")]["avg_base_salary"] / 1000:.1f}k',
         "avg_m": f'${eq[("All", "Man")]["avg_base_salary"] / 1000:.1f}k',
         "l4_women": eq[("L4", "Woman")]["employees"], "l4_cost": k(eq[("L4", "Woman")]["cost_to_close_usd"]),
@@ -192,10 +204,91 @@ def catalog_table(G):
             f"<th>Most sensitive column</th><th>Tests</th></tr></thead><tbody>{rows}</tbody></table>")
 
 
+def first_sentence(text, limit=170):
+    text = " ".join((text or "").split())
+    cut = text.find(". ")
+    text = text[:cut + 1] if 0 < cut < limit else text
+    return text if len(text) <= limit else text[:limit - 1].rsplit(" ", 1)[0] + "…"
+
+
+def lineage(manifest, metric_count):
+    """Every seed and model, its layer, domain and upstream edges, from dbt's manifest."""
+    proj = manifest["metadata"]["project_name"]
+    sources = {s["unique_id"]: s for s in manifest["sources"].values()}
+    src_to_seed = {uid: f"seed.{proj}.{s['identifier']}" for uid, s in sources.items()}
+    seed_desc = {s["identifier"]: s.get("description", "") for s in sources.values()}
+    owners = {g["name"]: (g.get("owner") or {}).get("name") for g in manifest.get("groups", {}).values()}
+    tests = {}
+    for t in manifest["nodes"].values():
+        if t["resource_type"] == "test":
+            for dep in {src_to_seed.get(x, x) for x in t["depends_on"]["nodes"]}:
+                tests[dep] = tests.get(dep, 0) + 1
+    nodes = []
+    for uid, n in manifest["nodes"].items():
+        if n["package_name"] != proj or n["resource_type"] not in ("model", "seed"):
+            continue
+        path = n["original_file_path"].replace(chr(92), "/")
+        name = n["name"]
+        if "/semantic/" in path:
+            continue  # the time spine is a utility, not a step in the flow
+        if n["resource_type"] == "seed":
+            layer, desc = "source", seed_desc.get(name) or n.get("description")
+        else:
+            layer = ("staging" if "/staging/" in path else "intermediate" if name.startswith("int_")
+                     else "mart" if ("/marts/" in path or "/people/core/" in path) else "serve")
+            desc = n.get("description")
+        group = n["config"].get("group")
+        people = group == "people" or "/hris/" in path or "/governance/" in path
+        nodes.append({
+            "id": uid, "name": name, "layer": layer, "domain": "people" if people else "revenue",
+            "system": SYSTEM.get(n["schema"], ""), "desc": first_sentence(desc),
+            "owner": owners.get(group) or ("People Analytics" if people else "Revenue Analytics"),
+            "mat": "seed" if n["resource_type"] == "seed" else n["config"].get("materialized"),
+            "access": n["config"].get("access") or "", "schema": n["schema"], "tests": tests.get(uid, 0),
+            "cols": len(n.get("columns", {})),
+            "deps": sorted({src_to_seed.get(d, d) for d in n.get("depends_on", {}).get("nodes", [])}),
+        })
+    ids = {x["id"] for x in nodes}
+    for x in nodes:
+        x["deps"] = [d for d in x["deps"] if d in ids]
+    sem_deps = sorted({d for sm in manifest.get("semantic_models", {}).values() for d in sm["depends_on"]["nodes"]})
+    nodes.append({"id": "semantic.metrics", "name": f"semantic layer: {metric_count} metrics", "layer": "serve",
+                  "domain": "revenue", "system": "", "owner": "Revenue Analytics", "mat": "MetricFlow", "access": "",
+                  "schema": "models/semantic", "tests": 0, "cols": 0, "deps": [d for d in sem_deps if d in ids],
+                  "desc": "ARR, NRR, GRR, bookings, pipeline and usage metrics, each defined once for every dashboard and AI agent."})
+    order = {k: i for i, (k, *_) in enumerate(LAYERS)}
+    nodes.sort(key=lambda x: (order[x["layer"]], x["domain"] != "revenue", x["system"], x["name"]))
+    return {"layers": [{"key": k, "label": l, "sub": s, "mat": m} for k, l, s, m in LAYERS], "nodes": nodes}
+
+
+def mermaid_blocks():
+    """(heading, diagram) pairs from DATA_MODEL.md, so the page and the doc share one source."""
+    with open(os.path.join(DBT_DIR, "DATA_MODEL.md"), encoding="utf-8") as f:
+        lines = f.read().split(chr(10))
+    out, heading, i = [], "", 0
+    while i < len(lines):
+        if lines[i].startswith("#"):
+            heading = lines[i].lstrip("#").strip()
+        if lines[i].strip() == "```mermaid":
+            j = i + 1
+            while lines[j].strip() != "```":
+                j += 1
+            out.append((heading, chr(10).join(lines[i + 1:j])))
+            i = j
+        i += 1
+    return out
+
+
+def heading_html(h):
+    h = h.replace(" — ", ": ")
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(h, quote=False))
+
+
 def main():
     d = site_data.collect()
     with open(os.path.join(DBT_DIR, "target", "manifest.json"), encoding="utf-8") as f:
-        d["metric_count"] = len(json.load(f).get("metrics", {}))
+        manifest = json.load(f)
+    d["metric_count"] = len(manifest.get("metrics", {}))
     V, gov_proofs = values_and_claims(d)
     G = d["governance"]
     proofs_html = "".join(
@@ -204,11 +297,38 @@ def main():
     V["proof_table"] = proof_table(G["proofs"])
     V["catalog_table"] = catalog_table(G)
 
+    lin = lineage(manifest, d["metric_count"])
+    per_layer = {k: [x for x in lin["nodes"] if x["layer"] == k] for k, *_ in LAYERS}
+    if not all(sum(x["tests"] for x in per_layer[k]) > 0 for k, *_ in LAYERS):
+        raise SystemExit("The architecture page says every layer is tested; one layer has no tests.")
+    real = {k: [x for x in v if x["id"] != "semantic.metrics"] for k, v in per_layer.items()}
+    V["n_sources"] = len(real["source"])
+    V["n_models"] = sum(len(v) for k, v in real.items() if k != "source")
+    V["n_tests"] = G["tests"]
+    V["layer_rows"] = "".join(
+        f'<tr><td class="nowrap"><b>{label}</b></td><td>{sub}</td><td class="nowrap">{mat}</td>'
+        f'<td>{", ".join(sorted({x["schema"] for x in real[k]}))}</td>'
+        f'<td>{len(real[k])}</td><td>{sum(x["tests"] for x in per_layer[k])}</td></tr>'
+        for k, label, sub, mat in LAYERS)
+    blocks = mermaid_blocks()
+    erd = [b for b in blocks if "entity-relationship" in b[0]]
+    builds = [b for b in blocks if b[0].startswith("`")]
+    V["erd_revenue"] = html.escape(erd[0][1])
+    V["erd_people"] = html.escape(erd[1][1])
+    V["mart_builds"] = "".join(
+        f'<details class="build"><summary>{heading_html(h)}</summary><div class="diagram"><pre class="mermaid-lazy">{html.escape(code)}</pre></div></details>'
+        for h, code in builds)
+
     css, js = read("site.css"), read("site.js")
-    data = json.dumps({"revenue": d["revenue"], "people": d["people"], "access": d["access"]},
-                      default=str, separators=(",", ":")).replace("</", "<\\/")
+    def page_data(name):
+        payload = {"revenue": d["revenue"], "people": d["people"], "access": d["access"]}
+        if name == "architecture.html":
+            payload["lineage"] = lin  # only the lineage page needs the model graph
+        return json.dumps(payload, default=str, separators=(",", ":")).replace("</", "<\\/")
+
     os.makedirs(DOCS, exist_ok=True)
     for name, label, title, description in PAGES:
+        data = page_data(name)
         more = '<a class="more" href="access.html">How it\'s enforced: the policy, the tests, the owners</a>' if name == "index.html" else ""
         who = fill(read("_who.html"), {**V, "gov_proofs": proofs_html, "who_more": more})
         content = fill(read(name), {**V, "who_block": who})
@@ -216,7 +336,8 @@ def main():
         nav = "".join(
             f'<a href="{f}"{current if f == name else ""}>{lbl}</a>' for f, lbl, _, _ in PAGES
         ) + f'<a href="{REPO}">GitHub ↗</a>'
-        page = fill(read("base.html"), {**V, "title": title, "description": description, "nav": nav,
+        body_class = "report" if name in ("revenue.html", "people.html") else ""
+        page = fill(read("base.html"), {**V, "title": title, "description": description, "nav": nav, "body_class": body_class,
                                         "content": content, "css": css, "js": js, "data": data})
         with open(os.path.join(DOCS, name), "w", encoding="utf-8", newline="\n") as f:
             f.write(page)

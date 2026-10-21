@@ -5,6 +5,8 @@
   const D = JSON.parse(document.getElementById("site-data").textContent);
   const COL = { blue: "#3a5bff", red: "#ef233c", green: "#12a150", yellow: "#ffb703",
                 gray: "#8d99ae", ink: "#101010", muted: "#55565c", line: "#e7e7ea" };
+  if (document.body.classList.contains("report"))   // the business-review pages use the report palette
+    Object.assign(COL, { blue: "#2f6db0", red: "#c0492b", green: "#1f9d8f", yellow: "#d99a2b", gray: "#9fb0c0", ink: "#12395b", muted: "#5b6b7b", line: "#e2e8f0" });
   const NS = "http://www.w3.org/2000/svg";
   const esc = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const fmtM = v => (v < 0 ? "-" : "") + "$" + Math.abs(v / 1e6).toFixed(1) + "M";
@@ -238,4 +240,75 @@
     render(roles[0]);
   }
   document.querySelectorAll(".wsw").forEach(whoSeesWhat);
+
+  // ---- how it's built: tap a model, see its lineage ---------------------------
+  function lineageMap(root) {
+    const L = D.lineage, byId = {}, deps = {}, kids = {};
+    L.nodes.forEach(n => { byId[n.id] = n; deps[n.id] = n.deps; });
+    L.nodes.forEach(n => n.deps.forEach(d => (kids[d] = kids[d] || []).push(n.id)));
+    const map = root.querySelector(".lmap"), info = root.querySelector(".linfo");
+    map.innerHTML = L.layers.map(l => {
+      const ns = L.nodes.filter(n => n.layer === l.key);
+      return `<div class="lcol"><h3>${esc(l.label)} <span>${ns.length}</span></h3><div class="sub">${esc(l.sub)}</div><div class="lnodes">` +
+        ns.map(n => `<button type="button" class="ln ${n.domain}" data-id="${esc(n.id)}" aria-pressed="false">${n.system ? `<small>${esc(n.system)}</small>` : ""}${esc(n.name)}</button>`).join("") +
+        "</div></div>";
+    }).join("");
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "lsvg");
+    svg.setAttribute("aria-hidden", "true");
+    map.prepend(svg);
+    const walk = (start, next) => {
+      const seen = new Set(), stack = [...(next[start] || [])];
+      while (stack.length) { const x = stack.pop(); if (!seen.has(x)) { seen.add(x); (next[x] || []).forEach(y => stack.push(y)); } }
+      return seen;
+    };
+    let current = null;
+    function draw() {
+      svg.innerHTML = "";
+      const cols = getComputedStyle(map).gridTemplateColumns.split(" ").length;
+      if (!current || cols < 5) return;   // lines only when all five layers sit side by side
+      const box = map.getBoundingClientRect(), up = walk(current, deps), down = walk(current, kids);
+      L.nodes.forEach(n => n.deps.forEach(d => {
+        const onUp = (n.id === current || up.has(n.id)) && up.has(d);
+        const onDown = (d === current || down.has(d)) && down.has(n.id);
+        if (!onUp && !onDown) return;
+        const a = map.querySelector(`[data-id="${CSS.escape(d)}"]`), b = map.querySelector(`[data-id="${CSS.escape(n.id)}"]`);
+        if (!a || !b) return;
+        const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        const y1 = ra.top + ra.height / 2 - box.top, y2 = rb.top + rb.height / 2 - box.top;
+        let path;
+        if (Math.abs(ra.left - rb.left) < 4) {          // same layer: loop out to the left
+          const x = ra.left - box.left;
+          path = `M${x} ${y1} C${x - 22} ${y1} ${x - 22} ${y2} ${x} ${y2}`;
+        } else {
+          const x1 = ra.right - box.left, x2 = rb.left - box.left, dx = Math.max(16, (x2 - x1) / 2);
+          path = `M${x1} ${y1} C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`;
+        }
+        svgEl("path", { d: path, stroke: byId[n.id].domain === "people" ? COL.red : COL.blue }, svg);
+      }));
+    }
+    function select(id) {
+      current = id;
+      const n = byId[id], up = walk(id, deps), down = walk(id, kids);
+      map.classList.add("tracing");
+      map.querySelectorAll(".ln").forEach(b => {
+        const x = b.dataset.id;
+        b.classList.toggle("sel", x === id); b.classList.toggle("up", up.has(x)); b.classList.toggle("down", down.has(x));
+        b.setAttribute("aria-pressed", String(x === id));
+      });
+      const layer = L.layers.find(l => l.key === n.layer).label;
+      const meta = [layer, n.mat, n.schema, n.access, "owner: " + n.owner].filter(Boolean).map(esc).join(" · ");
+      info.innerHTML = `<div><div class="nm">${esc(n.name)}</div><div class="meta">${meta}</div><p>${esc(n.desc || "")}</p></div>` +
+        `<div class="counts"><span><b>${up.size}</b>upstream</span><span><b>${down.size}</b>downstream</span><span><b>${n.tests}</b>tests</span>` +
+        (n.cols ? `<span><b>${n.cols}</b>documented columns</span>` : "") + "</div>";
+      draw();
+    }
+    map.addEventListener("click", e => { const b = e.target.closest(".ln"); if (b) select(b.dataset.id); });
+    let t2;
+    window.addEventListener("resize", () => { clearTimeout(t2); t2 = setTimeout(draw, 150); });
+    const start = L.nodes.find(n => n.name === "fct_arr") || L.nodes[0];
+    select(start.id);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  }
+  document.querySelectorAll(".lineage").forEach(lineageMap);
 })();

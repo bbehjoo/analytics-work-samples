@@ -19,7 +19,7 @@ It mirrors the revenue marts I've built in B2B SaaS, rebuilt from scratch on
 generated data, plus the people data and access controls a data leader is
 accountable for.
 
-📊 **[Live site](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🔐 **[Governance](GOVERNANCE.md)** &nbsp;·&nbsp; 🗺️ **[ERD & lineage](DATA_MODEL.md)**
+📊 **[Live site](https://bbehjoo.github.io/analytics-work-samples/)** &nbsp;·&nbsp; 🧭 **[Interactive lineage map](https://bbehjoo.github.io/analytics-work-samples/architecture.html)** &nbsp;·&nbsp; 🔐 **[Governance](GOVERNANCE.md)** &nbsp;·&nbsp; 🗺️ **[ERD & lineage](DATA_MODEL.md)**
 
 ---
 
