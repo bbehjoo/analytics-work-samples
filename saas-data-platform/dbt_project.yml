@@ -20,6 +20,8 @@ clean-targets:
 vars:
   people_as_of: '2025-12-31'     # the HR snapshot date
   min_group_size: 5              # never report a people metric for fewer than 5 people
+  discount_approval_threshold: 0.25   # new pricing more than 25% off list needs a Sales VP
+  cfo_approval_threshold: 0.35        # ...and more than 35% off list, the CFO
   # Salt for pseudonyms. Locally a fixed demo value; in production it comes from
   # a secret store so nobody can rebuild the mapping from employee ids.
   pseudonym_salt: "{{ env_var('PSEUDONYM_SALT', 'local-demo-salt') }}"
@@ -67,12 +69,39 @@ models:
 seeds:
   saas_data_platform:
     +quote_columns: false
+    # Money is typed explicitly. Left to inference, a column whose early rows are
+    # whole dollars is loaded as INTEGER and every later cent is silently rounded
+    # away (assert_primary_quote_ties_to_bookings caught exactly that).
     salesforce:
       +schema: raw_salesforce
+      salesforce_opportunities:
+        +column_types: {amount: double}
+      salesforce_opportunity_line_items:
+        +column_types: {unit_price: double, line_amount: double}
+      salesforce_contracts:
+        +column_types: {total_contract_value: double}
+      salesforce_subscriptions:
+        +column_types: {annual_recurring_amount: double, unit_price: double}
+      salesforce_products:
+        +column_types: {list_unit_price: double}
+      salesforce_price_book_entries:
+        +column_types: {list_unit_price: double}
+      salesforce_quote_lines:
+        +column_types: {list_unit_price: double, discount_pct: double, net_unit_price: double, net_total: double}
     netsuite:
       +schema: raw_netsuite
+      netsuite_sales_orders:
+        +column_types: {order_total: double}
+      netsuite_sales_order_lines:
+        +column_types: {rate: double, line_amount: double}
+      netsuite_invoices:
+        +column_types: {invoice_total: double}
+      netsuite_invoice_lines:
+        +column_types: {rate: double, line_amount: double}
     usage:
       +schema: raw_usage
+      usage_monthly:
+        +column_types: {consumed_units: double, consumed_value: double}
     hris:
       +schema: raw_hris
       hris_workers:

@@ -159,6 +159,20 @@
       color: r.segment === "Mid-Market" ? COL.blue : COL.gray, text: fmtM(r.acv) })) }),
     recon: el => hbars(el, { rows: R.recon.filter(r => r.at_risk >= 1000).map(r => ({ label: RECON[r.category] || r.category,
       value: r.at_risk, color: r.category === "missing_in_netsuite" ? COL.red : COL.gray, text: fmtM(r.at_risk) + " · " + r.n })) }),
+    discount_timing: el => hbars(el, { max: 0.3, rows: R.cpq.timing.map(r => ({
+      label: r.is_quarter_end_month ? "Last month of a quarter" : "First two months",
+      value: r.discount, text: pct(r.discount), color: r.is_quarter_end_month ? COL.red : COL.gray })) }),
+    discount_segment: el => hbars(el, { max: 0.3, rows: R.cpq.segment.map(r => ({
+      label: r.segment, value: r.discount, text: pct(r.discount), color: COL.blue })) }),
+    q2c_split: el => {
+      const by = Object.fromEntries(R.cpq.q2c.map(r => [r.status, r.n]));
+      const clean = by["clean"] || 0, unapproved = by["discount not approved"] || 0;
+      const other = R.cpq.q2c.reduce((a, r) => a + r.n, 0) - clean - unapproved;
+      split(el, { aria: "Won deals by quote-to-cash status", segments: [
+        { label: "clean from quote to invoice", value: clean, color: COL.green },
+        { label: "order or invoice differs", value: other, color: COL.yellow, ink: COL.ink },
+        { label: "discount not approved", value: unapproved, color: COL.red }] });
+    },
     rpe: el => {
       const pts = P.rpe.filter(r => r.ym >= "2024-01").map(r => ({ x: r.ym, y: r.arr_per_employee }));
       const peak = pts.reduce((a, p, i) => (p.y > pts[a].y ? i : a), 0);

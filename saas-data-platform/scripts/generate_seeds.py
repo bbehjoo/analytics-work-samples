@@ -22,6 +22,12 @@ downstream revenue categories emerge from the data rather than being hard-coded:
 
     new_logo · upsell · cross_sell · downgrade · churn · scheduled
 
+Deals are priced off regional price books and discounted (CPQ), with their own
+random generator so pricing never changes which deals happen or when. Every deal
+gets quotes (drafts, then one primary quote that ties to the booking to the
+cent), and discounts above 25% need an approval. A few are seeded to close
+without one, for the approvals report to find.
+
 It also injects a controlled number of Salesforce<->NetSuite discrepancies
 (amount mismatches, missing orders, orphan orders, timing differences, currency
 rounding, partial billing) so the reconciliation mart has something to surface.
@@ -122,6 +128,33 @@ RECURRING_PIDS = [p[0] for p in PRODUCTS if p[4]]
 ONETIME_PIDS = [p[0] for p in PRODUCTS if not p[4]]
 PRICE = {p[0]: p[5] for p in PRODUCTS}
 
+# --------------------------------------------------------------------------- #
+# Pricing (CPQ). List prices come from a price book per region, rising each
+# year; each deal is discounted off list. Pricing draws from its OWN generator,
+# so every account, deal and date in the simulation is unchanged by it.
+# --------------------------------------------------------------------------- #
+price_rng = random.Random(2024)
+LIST_MARKUP = 1.25                 # list sits above the typical net price
+LIST_GROWTH = 0.05                 # list prices rise 5% a year
+REGION_LIST = {"NA": 1.00, "EMEA": 1.00, "APAC": 0.95, "LATAM": 0.90}
+SEGMENT_DISCOUNT = {"SMB": 0.10, "Mid-Market": 0.16, "Enterprise": 0.22}
+NEW_BUSINESS_EXTRA = 0.03
+QUARTER_END_EXTRA = 0.06           # seeded finding: last month of each quarter discounts deeper
+HEAVY_DISCOUNTER_EXTRA = 0.08      # seeded finding: two reps discount deeper than the rest
+SERVICES_MAX_DISCOUNT = 0.10
+APPROVAL_THRESHOLD = 0.25          # new pricing above 25% off list needs a Sales VP...
+CFO_THRESHOLD = 0.35               # ...and above 35%, the CFO
+UNAPPROVED_SEEDED = 9              # seeded finding: deals over the threshold closed without approval
+N_LOST = 650                       # lost deals, for a realistic win rate on new pricing (~40%)
+
+
+def year_of(idx: int) -> int:
+    return BASE_YEAR + (BASE_MONTH - 1 + idx) // 12
+
+
+def list_price(pid: str, region: str, year: int) -> float:
+    return float(round(PRICE[pid] * LIST_MARKUP * REGION_LIST[region] * (1 + LIST_GROWTH) ** (year - 2023)))
+
 N_ACCOUNTS = 200
 N_USERS = 25
 
@@ -153,6 +186,30 @@ users_by_region = defaultdict(list)
 for u in users:
     users_by_region[u["sales_region"]].append(u["user_id"])
 
+REP_OFFSET = {u["user_id"]: price_rng.gauss(0, 0.02) for u in users}
+HEAVY_DISCOUNTERS = sorted(price_rng.sample([u["user_id"] for u in users], 2))
+for _uid in HEAVY_DISCOUNTERS:
+    REP_OFFSET[_uid] += HEAVY_DISCOUNTER_EXTRA
+
+
+def deal_discount(acct, opp_type, idx):
+    """A deal's discount off list: segment, deal type, the rep's habit, quarter-end pressure."""
+    d = SEGMENT_DISCOUNT[acct["segment"]] + REP_OFFSET[acct["owner_id"]]
+    if opp_type == "New Business":
+        d += NEW_BUSINESS_EXTRA
+    if idx is not None and month_start(idx).month in (3, 6, 9, 12):
+        d += QUARTER_END_EXTRA
+    d += price_rng.gauss(0, 0.03)
+    return round(min(0.45, max(0.0, d)), 3)
+
+
+def net_price(pid, acct, idx, discount):
+    return round(list_price(pid, acct["geo_region"], year_of(idx)) * (1 - discount), 2)
+
+
+def unit_of(seg):
+    return round(seg["arr"] / seg["seats"], 2)
+
 products = []
 for sku, lob, family, name, is_rec, price in PRODUCTS:
     products.append({
@@ -164,7 +221,7 @@ for sku, lob, family, name, is_rec, price in PRODUCTS:
         "product_category": "Recurring" if is_rec else "One-Time",
         "is_recurring": int(is_rec),
         "is_active": 1,
-        "list_unit_price": price,
+        "list_unit_price": round(price * LIST_MARKUP),
     })
 
 # --------------------------------------------------------------------------- #
@@ -335,9 +392,9 @@ def seats_for(pid):
     return random.randint(1, 12)
 
 
-def recurring_line(pid, seats, line_amount=None):
-    amt = seats * PRICE[pid] if line_amount is None else line_amount
-    return {"product_id": pid, "quantity": seats, "unit_price": PRICE[pid],
+def recurring_line(pid, seats, unit, line_amount=None):
+    amt = round(seats * unit, 2) if line_amount is None else line_amount
+    return {"product_id": pid, "quantity": seats, "unit_price": unit,
             "is_recurring": True, "line_amount": amt}
 
 
@@ -355,8 +412,8 @@ for a in accounts:
     landing = random.randint(0, 30)
     owned = {}  # product_id -> dict(seats, arr, start_idx, sub_id, contract_id)
 
-    def open_seg(pid, idx, seats, contract_id):
-        owned[pid] = {"seats": seats, "arr": seats * PRICE[pid], "start_idx": idx,
+    def open_seg(pid, idx, seats, contract_id, arr):
+        owned[pid] = {"seats": seats, "arr": round(arr, 2), "start_idx": idx,
                       "sub_id": nid("SUB", 5), "contract_id": contract_id}
 
     def close_seg(pid, end_idx):
@@ -372,17 +429,19 @@ for a in accounts:
     term = random.choice(TERMS)
     n_init = random.choices([1, 2, 3], weights=[45, 40, 15])[0]
     init_pids = random.sample(RECURRING_PIDS, n_init)
-    lines = [recurring_line(pid, seats_for(pid)) for pid in init_pids]
+    d = deal_discount(a, "New Business", landing)
+    lines = [recurring_line(pid, seats_for(pid), net_price(pid, a, landing, d)) for pid in init_pids]
     if random.random() < 0.5:  # ~half of landings attach a one-time services line
         otp = random.choice(ONETIME_PIDS)
-        lines.append({"product_id": otp, "quantity": 1, "unit_price": PRICE[otp],
-                      "is_recurring": False, "line_amount": PRICE[otp]})
+        fee = net_price(otp, a, landing, min(d, SERVICES_MAX_DISCOUNT))
+        lines.append({"product_id": otp, "quantity": 1, "unit_price": fee,
+                      "is_recurring": False, "line_amount": fee})
     tcv = sum(line_tcv(l, term) for l in lines)
     cid, _ = make_contract_and_order(aid, landing, term, tcv, currency)
     make_opp(aid, owner, "New Business", landing, lines, True, term, currency, contract_id=cid)
     for l in lines:
         if l["is_recurring"]:
-            open_seg(l["product_id"], landing, l["quantity"], cid)
+            open_seg(l["product_id"], landing, l["quantity"], cid, l["line_amount"])
 
     # ---- Build a chronological list of post-landing events ----
     events = []
@@ -406,7 +465,7 @@ for a in accounts:
         term = random.choice(TERMS)
         if kind == "renewal":
             # Scheduled continuation — new booking, ARR unchanged.
-            lines = [recurring_line(pid, owned[pid]["seats"], owned[pid]["arr"]) for pid in owned]
+            lines = [recurring_line(pid, owned[pid]["seats"], unit_of(owned[pid]), owned[pid]["arr"]) for pid in owned]
             if not lines:
                 continue
             tcv = sum(line_tcv(l, term) for l in lines)
@@ -415,33 +474,37 @@ for a in accounts:
         elif kind == "upsell":
             pid = random.choice(list(owned))
             base_seats = owned[pid]["seats"]
+            base_arr = owned[pid]["arr"]
             add = random.randint(1, 8)
-            delta_arr = add * PRICE[pid]
-            lines = [recurring_line(pid, add, delta_arr)]   # booking = incremental ARR
+            unit = net_price(pid, a, idx, deal_discount(a, "Expansion", idx))
+            delta_arr = round(add * unit, 2)
+            lines = [recurring_line(pid, add, unit, delta_arr)]   # booking = incremental ARR
             tcv = line_tcv(lines[0], term)
             cid, _ = make_contract_and_order(aid, idx, term, tcv, currency)
             make_opp(aid, owner, "Expansion", idx, lines, True, term, currency, contract_id=cid)
             close_seg(pid, idx - 1)                          # end prior (lower) segment
-            open_seg(pid, idx, base_seats + add, cid)        # start new (higher) segment
+            open_seg(pid, idx, base_seats + add, cid, base_arr + delta_arr)  # start new (higher) segment
         elif kind == "cross_sell":
             avail = [p for p in RECURRING_PIDS if p not in owned]
             if not avail:
                 continue
             pid = random.choice(avail)
             seats = seats_for(pid)
-            lines = [recurring_line(pid, seats)]
+            unit = net_price(pid, a, idx, deal_discount(a, "Expansion", idx))
+            lines = [recurring_line(pid, seats, unit)]
             tcv = sum(line_tcv(l, term) for l in lines)
             cid, _ = make_contract_and_order(aid, idx, term, tcv, currency)
             make_opp(aid, owner, "Expansion", idx, lines, True, term, currency, contract_id=cid)
-            open_seg(pid, idx, seats, cid)
+            open_seg(pid, idx, seats, cid, lines[0]["line_amount"])
         elif kind == "downgrade":
             pid = random.choice(list(owned))
             cur_seats = owned[pid]["seats"]
             if cur_seats <= 1:
                 continue
             drop = random.randint(1, cur_seats - 1)
-            delta_arr = -drop * PRICE[pid]
-            lines = [{"product_id": pid, "quantity": -drop, "unit_price": PRICE[pid],
+            unit, cur_arr = unit_of(owned[pid]), owned[pid]["arr"]
+            delta_arr = round(-drop * unit, 2)
+            lines = [{"product_id": pid, "quantity": -drop, "unit_price": unit,
                       "is_recurring": True, "line_amount": delta_arr}]
             # downgrades are processed bookings; TCV mirrors the (negative) annualized change
             tcv = sum(line_tcv(l, term) for l in lines)
@@ -449,11 +512,11 @@ for a in accounts:
             make_opp(aid, owner, "Downgrade", idx, lines, True, term, currency, contract_id=cid)
             close_seg(pid, idx - 1)
             new_seats = cur_seats - drop
-            open_seg(pid, idx, new_seats, cid)
+            open_seg(pid, idx, new_seats, cid, cur_arr + delta_arr)
 
     # ---- Churn ----
     if churn_idx is not None and owned:
-        lost = [{"product_id": pid, "quantity": owned[pid]["seats"], "unit_price": PRICE[pid],
+        lost = [{"product_id": pid, "quantity": owned[pid]["seats"], "unit_price": unit_of(owned[pid]),
                  "is_recurring": True, "line_amount": owned[pid]["arr"]} for pid in list(owned)]
         make_opp(aid, owner, "Churn", churn_idx, lost, False, 12, currency, close_idx=churn_idx)
         for pid in list(owned):
@@ -476,7 +539,7 @@ for s in segments:
         "product_id": s["product_id"],
         "quantity": s["seats"],
         "annual_recurring_amount": money(s["arr"]),
-        "unit_price": money(PRICE[s["product_id"]]),
+        "unit_price": money(s["arr"] / s["seats"]),
         "billing_frequency": random.choice(["Annual", "Monthly", "Annual"]),
         "subscription_start_date": iso(month_start(s["start_idx"])),
         "subscription_end_date": iso(month_end(s["end_idx"])),
@@ -493,23 +556,26 @@ for s in segments:
             "account_id": s["account_id"],
             "product_id": s["product_id"],
             "consumed_units": consumed,
-            "consumed_value": money(consumed * PRICE[s["product_id"]] / 12.0),
+            "consumed_value": money(consumed * s["arr"] / s["seats"] / 12.0),
         })
 
 # --------------------------------------------------------------------------- #
 # 6) Open pipeline opportunities (no contract / no ARR yet)
 # --------------------------------------------------------------------------- #
+PIPELINE_IDX = 42  # pipeline closes in H2 2026, so it is quoted at 2026 list prices
 pipeline_accounts = random.sample(accounts, 55)
 for a in pipeline_accounts:
     for _ in range(random.randint(1, 2)):
         term = random.choice(TERMS)
         pid = random.choice(RECURRING_PIDS)
         seats = seats_for(pid)
-        lines = [recurring_line(pid, seats)]
+        d = deal_discount(a, "Pipeline", None)
+        lines = [recurring_line(pid, seats, net_price(pid, a, PIPELINE_IDX, d))]
         if random.random() < 0.3:
             otp = random.choice(ONETIME_PIDS)
-            lines.append({"product_id": otp, "quantity": 1, "unit_price": PRICE[otp],
-                          "is_recurring": False, "line_amount": PRICE[otp]})
+            fee = net_price(otp, a, PIPELINE_IDX, min(d, SERVICES_MAX_DISCOUNT))
+            lines.append({"product_id": otp, "quantity": 1, "unit_price": fee,
+                          "is_recurring": False, "line_amount": fee})
         otype = random.choices(["New Business", "Expansion"], weights=[40, 60])[0]
         make_opp(a["account_id"], a["owner_id"], otype, None, lines, False, term,
                  a["account_currency"], is_pipeline=True)
@@ -634,6 +700,100 @@ for _ in range(orphan_n):
 expected["orphan_in_netsuite"] = orphan_n
 
 # --------------------------------------------------------------------------- #
+# 8) CPQ: lost deals, price books, quotes, quote lines, approvals
+#    Everything below runs after the simulation, so nothing above changes.
+# --------------------------------------------------------------------------- #
+landed = {}
+for o in opps:
+    if o["is_won"] and o["opportunity_type"] == "New Business":
+        d0 = datetime.date.fromisoformat(o["close_date"])
+        landed[o["account_id"]] = (d0.year - BASE_YEAR) * 12 + d0.month - BASE_MONTH
+for _ in range(N_LOST):
+    a = price_rng.choice(accounts)
+    li = price_rng.randint(2, LAST_IDX)
+    # before the account lands, a lost deal is new business; after, an expansion
+    otype = "Expansion" if li > landed.get(a["account_id"], LAST_IDX + 1) else "New Business"
+    d = deal_discount(a, otype, li)
+    lines = [recurring_line(pid, price_rng.randint(1, 12), net_price(pid, a, li, d))
+             for pid in price_rng.sample(RECURRING_PIDS, price_rng.choice([1, 1, 2]))]
+    make_opp(a["account_id"], a["owner_id"], otype, li, lines, False, price_rng.choice(TERMS),
+             a["account_currency"], close_idx=li)
+
+price_books, price_book_entries = [], []
+for region in REGION_LIST:
+    pb_id = f"PB-{region}"
+    price_books.append({"price_book_id": pb_id, "price_book_name": f"{region} Standard",
+                        "region": region, "currency_code": "USD", "is_active": 1})
+    for year in range(2023, 2027):
+        for pid in PRICE:
+            price_book_entries.append({"price_book_entry_id": nid("PBE", 5), "price_book_id": pb_id,
+                                       "product_id": pid, "effective_year": year,
+                                       "list_unit_price": list_price(pid, region, year)})
+
+APPROVERS = {("Sales VP", r): fake.name() for r in REGION_LIST}
+APPROVERS[("CFO", None)] = fake.name()
+lines_by_opp = defaultdict(list)
+for ol in opp_lines:
+    lines_by_opp[ol["opportunity_id"]].append(ol)
+
+quotes, quote_lines, approvals = [], [], []
+needs_approval = []   # (quote, level, close_date) for won new pricing over the threshold
+for o in opps:
+    if o["opportunity_type"] == "Churn":
+        continue  # a churned customer is not quoted
+    acct = acct_by_id[o["account_id"]]
+    region, year = acct["geo_region"], int(o["close_date"][:4])
+    created = datetime.date.fromisoformat(o["created_date"])
+    close = datetime.date.fromisoformat(o["close_date"])
+    primary_day = max(created, close - datetime.timedelta(days=price_rng.randint(3, 15)))
+    olines = lines_by_opp[o["opportunity_id"]]
+    n_drafts = price_rng.choice([0, 0, 1, 1, 2])
+    contact = fake.name()
+    status = ("Accepted" if o["is_won"] else "Rejected") if o["is_closed"] else "Presented"
+    for k in range(n_drafts + 1):
+        is_primary = k == n_drafts
+        step = 0.03 * (n_drafts - k)   # earlier drafts conceded less
+        qd = primary_day if is_primary else created + (primary_day - created) * (k + 1) // (n_drafts + 1)
+        q = {"quote_id": nid("QTE", 6), "opportunity_id": o["opportunity_id"], "account_id": o["account_id"],
+             "owner_id": o["owner_id"], "price_book_id": f"PB-{region}",
+             "quote_status": status if is_primary else "Superseded", "is_primary": int(is_primary),
+             "created_date": iso(qd), "expiration_date": iso(qd + datetime.timedelta(days=30)),
+             "contact_name": contact, "contact_email": fake.safe_email()}
+        quotes.append(q)
+        q_list = q_net = 0.0
+        for ol in olines:
+            lp = list_price(ol["product_id"], region, year)
+            line_disc = max(0.0, 1 - ol["unit_price"] / lp)
+            unit = ol["unit_price"] if is_primary else round(lp * (1 - max(0.0, line_disc - step)), 2)
+            net_total = ol["line_amount"] if is_primary else round(unit * ol["quantity"], 2)
+            quote_lines.append({"quote_line_id": nid("QL", 6), "quote_id": q["quote_id"],
+                                "product_id": ol["product_id"], "quantity": ol["quantity"],
+                                "list_unit_price": lp, "discount_pct": round(1 - unit / lp, 4),
+                                "net_unit_price": unit, "net_total": net_total,
+                                "is_recurring": ol["is_recurring"], "term_months": ol["term_months"]})
+            if ol["quantity"] > 0:
+                q_list += lp * ol["quantity"]
+                q_net += net_total
+        qdisc = 1 - q_net / q_list if q_list else 0
+        if (is_primary and status == "Accepted" and o["opportunity_type"] in ("New Business", "Expansion")
+                and qdisc > APPROVAL_THRESHOLD):
+            needs_approval.append((q, "CFO" if qdisc > CFO_THRESHOLD else "Sales VP", close, region))
+
+unapproved = set(price_rng.sample(range(len(needs_approval)), UNAPPROVED_SEEDED))
+for i, (q, level, close, region) in enumerate(needs_approval):
+    if i in unapproved:
+        continue
+    asked = datetime.date.fromisoformat(q["created_date"])
+    wait = price_rng.randint(1, 4) if level == "Sales VP" else price_rng.randint(3, 9)
+    approvals.append({"approval_id": nid("APR", 5), "quote_id": q["quote_id"], "approval_level": level,
+                      "approver_name": APPROVERS[(level, region if level == "Sales VP" else None)],
+                      "approval_status": "Approved", "requested_date": iso(asked),
+                      "decided_date": iso(min(close, asked + datetime.timedelta(days=wait)))})
+
+cpq_findings = {"unapproved_discounts": UNAPPROVED_SEEDED, "approval_threshold": APPROVAL_THRESHOLD,
+                "quarter_end_extra_discount": QUARTER_END_EXTRA, "heavy_discounters": HEAVY_DISCOUNTERS}
+
+# --------------------------------------------------------------------------- #
 # Write CSVs
 # --------------------------------------------------------------------------- #
 def write(df_rows, path, cols=None):
@@ -659,6 +819,11 @@ tables = {
     os.path.join(NS_DIR, "netsuite_invoices.csv"): ns_invoices,
     os.path.join(NS_DIR, "netsuite_invoice_lines.csv"): ns_invoice_lines,
     os.path.join(USE_DIR, "usage_monthly.csv"): usage_rows,
+    os.path.join(SF_DIR, "salesforce_price_books.csv"): price_books,
+    os.path.join(SF_DIR, "salesforce_price_book_entries.csv"): price_book_entries,
+    os.path.join(SF_DIR, "salesforce_quotes.csv"): quotes,
+    os.path.join(SF_DIR, "salesforce_quote_lines.csv"): quote_lines,
+    os.path.join(SF_DIR, "salesforce_quote_approvals.csv"): approvals,
 }
 
 print("Synthetic seed generation (seed=%d)" % SEED)
@@ -669,9 +834,12 @@ for path, rows in tables.items():
 
 with open(os.path.join(HERE, "seeded_discrepancy_counts.json"), "w") as f:
     json.dump(expected, f, indent=2)
+with open(os.path.join(HERE, "seeded_cpq_findings.json"), "w") as f:
+    json.dump(cpq_findings, f, indent=2)
 
 print("-" * 60)
 print("Seeded reconciliation discrepancies (for dbt tests):")
 for k, v in expected.items():
     print(f"  {k:<22} {v}")
+print("Seeded CPQ findings:", cpq_findings)
 print("Done.")

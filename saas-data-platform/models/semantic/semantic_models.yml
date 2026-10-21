@@ -153,6 +153,54 @@ semantic_models:
         agg: count_distinct
         expr: opportunity_id
 
+  - name: quote
+    description: CPQ quotes at header grain, by close date, for pricing and discount discipline.
+    model: ref('fct_quote')
+    defaults:
+      agg_time_dimension: close_date
+    entities:
+      - name: quote
+        type: primary
+        expr: quote_id
+      - name: account
+        type: foreign
+        expr: account_id
+      - name: sales_rep
+        type: foreign
+        expr: owner_id
+    dimensions:
+      - name: close_date
+        type: time
+        type_params:
+          time_granularity: day
+      - name: opportunity_type
+        type: categorical
+      - name: is_quarter_end_month
+        type: categorical
+      - name: primary_status
+        type: categorical
+        expr: "case when is_primary then quote_status else 'Superseded' end"
+    measures:
+      - name: quote_list_amount
+        description: List value of the products being sold.
+        agg: sum
+        expr: list_amount
+      - name: quote_net_amount
+        agg: sum
+        expr: net_amount
+      - name: quote_discount_amount
+        agg: sum
+        expr: discount_amount
+      - name: quote_count
+        agg: count_distinct
+        expr: quote_id
+      - name: approval_days
+        agg: sum
+        expr: approval_cycle_days
+      - name: approved_quotes
+        agg: sum
+        expr: "case when approval_cycle_days is not null then 1 else 0 end"
+
   - name: usage
     description: Consumption vs entitlement, account x product x month.
     model: ref('fct_usage')

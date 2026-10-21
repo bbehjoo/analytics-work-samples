@@ -9,8 +9,9 @@ columns is in [GOVERNANCE.md](GOVERNANCE.md).
 
 ## Revenue: entity-relationship diagram (the star schema)
 
-Three conformed dimensions fan out to four facts via surrogate keys
-(`account_key`, `product_key`, `sales_rep_key`).
+Three conformed dimensions fan out to the facts via surrogate keys
+(`account_key`, `product_key`, `sales_rep_key`). The CPQ facts (quotes and quote
+lines) share the same dimensions, so pricing slices exactly like bookings.
 
 ```mermaid
 erDiagram
@@ -22,6 +23,11 @@ erDiagram
     DIM_PRODUCT   ||--o{ FCT_ARR                        : product_key
     DIM_PRODUCT   ||--o{ FCT_USAGE                      : product_key
     DIM_SALES_REP ||--o{ FCT_ACV                        : sales_rep_key
+    DIM_ACCOUNT   ||--o{ FCT_QUOTE                      : account_key
+    DIM_SALES_REP ||--o{ FCT_QUOTE                      : sales_rep_key
+    FCT_QUOTE     ||--|{ FCT_QUOTE_LINE                 : quote_id
+    DIM_PRODUCT   ||--o{ FCT_QUOTE_LINE                 : product_key
+    DIM_ACCOUNT   ||--o{ RPT_QUOTE_TO_CASH              : account_key
 
     DIM_ACCOUNT {
         string account_key PK
@@ -72,6 +78,31 @@ erDiagram
         number entitled_units
         number utilization_pct
     }
+    FCT_QUOTE {
+        string quote_key PK
+        string account_key FK
+        string sales_rep_key FK
+        boolean is_primary
+        number list_amount
+        number net_amount
+        number discount_pct
+        boolean requires_approval
+        boolean is_approved
+    }
+    FCT_QUOTE_LINE {
+        string quote_line_key PK
+        string product_key FK
+        number list_unit_price
+        number net_unit_price
+        number discount_amount
+    }
+    RPT_QUOTE_TO_CASH {
+        string quote_to_cash_key PK
+        string account_key FK
+        number quote_amount
+        number booked_amount
+        string quote_to_cash_status
+    }
     RPT_CONTRACT_TO_NETSUITE_RECON {
         string recon_key PK
         string account_key FK
@@ -82,7 +113,8 @@ erDiagram
 ```
 
 **Grains:** `fct_acv` = one opportunity line · `fct_arr` = account × product × month-end ·
-`fct_usage` = account × product × month · `rpt_contract_to_netsuite_recon` = contract ↔ order.
+`fct_usage` = account × product × month · `rpt_contract_to_netsuite_recon` = contract ↔ order ·
+`fct_quote` = quote version · `fct_quote_line` = quote line · `rpt_quote_to_cash` = won opportunity.
 
 ---
 
@@ -154,7 +186,7 @@ flowchart LR
     classDef sem fill:#f3e9f6,stroke:#9b59b6,color:#16222e;
 
     subgraph SRC["Sources (CSV seeds emulate landed tables)"]
-        SF["Salesforce CRM"]:::src
+        SF["Salesforce CRM + CPQ"]:::src
         NS["NetSuite ERP"]:::src
         UZ["Usage telemetry"]:::src
     end
@@ -166,10 +198,11 @@ flowchart LR
         IARR["int_contract_lines__normalized<br/>int_arr__account_product_month<br/>int_arr__movements"]:::int
         IUSE["int_usage__monthly_rollup"]:::int
         IREC["int_recon__contract_order_match"]:::int
+        IQ["int_quote_lines__pricing"]:::int
     end
     subgraph MART["marts — tables"]
         DIMS["dim_account · dim_product · dim_sales_rep"]:::mart
-        FACTS["fct_acv · fct_arr · fct_usage · rpt_contract_to_netsuite_recon"]:::mart
+        FACTS["fct_acv · fct_arr · fct_usage · rpt_contract_to_netsuite_recon<br/>fct_quote · fct_quote_line · rpt_quote_to_cash"]:::mart
     end
     SEM["MetricFlow semantic layer<br/>(~20 metrics: ARR, NRR/GRR, bookings, ASP…)"]:::sem
     classDef ppl fill:#fbe3e2,stroke:#cb4644,color:#16222e;
@@ -190,6 +223,7 @@ flowchart LR
     STGN --> IARR --> FACTS
     STGN --> IUSE --> FACTS
     STGN --> IREC --> FACTS
+    STGN --> IQ --> FACTS
     STGN --> DIMS
     IARR --> DIMS
     DIMS --> FACTS
@@ -271,6 +305,39 @@ flowchart LR
     SC --> R
     SD --> R
     R --> M["rpt_contract_to_netsuite_recon"]:::mart
+```
+
+### `fct_quote` — pricing, discounts and approvals
+
+```mermaid
+flowchart LR
+    classDef seed fill:#e8eef6,stroke:#5b7aa6;
+    classDef stg fill:#eaf4ee,stroke:#3f9d6d;
+    classDef int fill:#fdf1e0,stroke:#d99a2b;
+    classDef mart fill:#e9eefc,stroke:#3f57b0,stroke-width:2px;
+
+    A["salesforce_quotes"]:::seed --> SA["stg_salesforce__quotes"]:::stg
+    B["salesforce_quote_lines"]:::seed --> SB["stg_salesforce__quote_lines"]:::stg
+    C["salesforce_price_book_entries"]:::seed --> SC["stg_salesforce__price_book_entries"]:::stg
+    D["salesforce_quote_approvals"]:::seed --> SD["stg_salesforce__quote_approvals"]:::stg
+    SA --> I["int_quote_lines__pricing<br/>list → discount → net"]:::int
+    SB --> I
+    SC --> I
+    I --> L["fct_quote_line"]:::mart
+    I --> Q["fct_quote<br/>discount vs policy, approval"]:::mart
+    SD --> Q
+```
+
+### `rpt_quote_to_cash` — quote to cash, end to end
+
+```mermaid
+flowchart LR
+    classDef stg fill:#eaf4ee,stroke:#3f9d6d;
+    classDef mart fill:#e9eefc,stroke:#3f57b0,stroke-width:2px;
+
+    Q["fct_quote<br/>primary quote"]:::mart --> R["rpt_quote_to_cash<br/>one status per won deal"]:::mart
+    O["stg_salesforce__opportunities<br/>+ line items: the booking"]:::stg --> R
+    N["rpt_contract_to_netsuite_recon<br/>contract → order → invoice"]:::mart --> R
 ```
 
 ### `dim_account` — conformed customer dimension

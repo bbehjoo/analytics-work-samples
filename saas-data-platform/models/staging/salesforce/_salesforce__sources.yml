@@ -32,3 +32,18 @@ sources:
       - name: subscriptions
         identifier: salesforce_subscriptions
         description: Recurring subscription lines with effective date ranges and annual recurring amounts — the ARR source of truth.
+      - name: price_books
+        identifier: salesforce_price_books
+        description: CPQ price books, one per region.
+      - name: price_book_entries
+        identifier: salesforce_price_book_entries
+        description: List price per product, price book and year.
+      - name: quotes
+        identifier: salesforce_quotes
+        description: CPQ quotes. Every version a rep sent; one per opportunity is primary. Carries the customer contact (PII).
+      - name: quote_lines
+        identifier: salesforce_quote_lines
+        description: CPQ quote lines with list price, discount and net price.
+      - name: quote_approvals
+        identifier: salesforce_quote_approvals
+        description: Approvals for discounts above policy, with approver and timing.

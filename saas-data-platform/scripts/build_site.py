@@ -102,6 +102,7 @@ def values_and_claims(d):
     build_total = sum(G["build"].values())
     build_passed = G["build"].get("success", 0) + G["build"].get("pass", 0)
     usage = R["usage"]
+    timing = {r["is_quarter_end_month"]: r["discount"] for r in R["cpq"]["timing"]}
     top_cat = max(R["bookings_cat"], key=lambda r: r["acv"])["category"]
     top_seg = max(R["bookings_seg"], key=lambda r: r["acv"])["segment"]
     month = datetime.date(int(peak["ym"][:4]), int(peak["ym"][5:]), 1).strftime("%B %Y")
@@ -130,7 +131,14 @@ def values_and_claims(d):
         "rpe_peak": k(peak["arr_per_employee"]), "rpe_end": k(end["arr_per_employee"]), "rpe_peak_month": month,
         "h2_hires": end["headcount"] - peak["headcount"], "h2_arr": m(end["ending_arr"] - peak["ending_arr"]),
         "gap_l4": f'{eq[("L4", "Woman")]["gap_vs_men_pct"]:.1f}%', "gap_l4_abs": f'{abs(eq[("L4", "Woman")]["gap_vs_men_pct"]):.1f}%',
-        "arr_first": f'${R["arr_trend"][0]["arr"]:.1f}M', "proof_count": len(proofs), "gap_l6": f'{eq[("L6", "Woman")]["gap_vs_men_pct"]:.1f}%',
+        "arr_first": f'${R["arr_trend"][0]["arr"]:.1f}M', "proof_count": len(proofs),
+        # CPQ
+        "avg_disc": pct(R["cpq"]["avg_discount"]), "win_rate": pct(R["cpq"]["win_rate"], 0),
+        "decided": f'{R["cpq"]["decided"]:,}',
+        "unapproved_n": R["cpq"]["approvals"]["unapproved"], "unapproved_amt": m(R["cpq"]["approvals"]["unapproved_amount"]),
+        "threshold": "25%", "approval_days": f'{R["cpq"]["approvals"]["approval_days"]:.1f}',
+        "qe_disc": pct(timing[True]), "other_disc": pct(timing[False]),
+        "qe_gap": f'{(timing[True] - timing[False]) * 100:.1f}', "gap_l6": f'{eq[("L6", "Woman")]["gap_vs_men_pct"]:.1f}%',
         "avg_w": f'${eq[("All", "Woman")]["avg_base_salary"] / 1000:.1f}k',
         "avg_m": f'${eq[("All", "Man")]["avg_base_salary"] / 1000:.1f}k',
         "l4_women": eq[("L4", "Woman")]["employees"], "l4_cost": k(eq[("L4", "Woman")]["cost_to_close_usd"]),
@@ -164,6 +172,10 @@ def values_and_claims(d):
         (eq[("L4", "Woman")]["gap_vs_men_pct"] == min(r["gap_vs_men_pct"] for r in P["pay_equity"] if r["gap_vs_men_pct"] is not None and r["job_level"] != "All"), "L4 is the largest gap"),
         (depts["Legal"]["is_suppressed"], "Legal is suppressed"),
         (eq[("L7", "Woman")]["is_suppressed"], "L7 women are suppressed"),
+        (timing[True] - timing[False] >= 0.04, "quarter-end deals discount several points deeper"),
+        (R["cpq"]["approvals"]["unapproved"] > 0, "some deals closed above policy without approval"),
+        (R["cpq"]["approvals"]["approval_days"] < 7, "approvals take only days"),
+        (abs(R["cpq"]["approvals"]["approved"] + R["cpq"]["approvals"]["unapproved"] - R["cpq"]["approvals"]["required"]) == 0, "approval counts add up"),
     ]
     broken = [msg for ok, msg in CLAIMS if not ok]
     if broken:

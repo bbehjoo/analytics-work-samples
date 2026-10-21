@@ -14,7 +14,7 @@ where it lives in the code.
 |---|---|---|
 | **Internal** | About the business, not a person | department, region, product, usage |
 | **Confidential** | Business-sensitive | customer revenue, job level, hire dates, pay-band midpoints |
-| **PII** | Identifies a person | name, email, birth date, home postal code, employee id |
+| **PII** | Identifies a person | name, email, birth date, home postal code, employee id; customer contacts on quotes; approver names |
 | **Restricted** | Could hurt a person if it leaked | pay, leave (health information), gender |
 
 Each column carries its class and a category in its YAML:
@@ -106,6 +106,10 @@ flowchart LR
   number about a person.
 - **Other domains get keys, never records.** Revenue joins to people through
   `bridge_employee_sales_rep`, which holds two hashed keys and nothing else.
+- **Personal data isn't only HR's.** CPQ quotes carry the customer's contact name
+  and email, and approvals carry the approver's name. Both are classified PII in
+  staging and never reach a mart; the governance check would fail if they did
+  without a tag.
 
 ---
 

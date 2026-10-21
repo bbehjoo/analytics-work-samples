@@ -34,3 +34,13 @@ models:
 
   - name: int_recon__contract_order_match
     description: Contract <-> order match with variances and discrepancy categories. Feeds the reconciliation report.
+
+  - name: int_quote_lines__pricing
+    description: >
+      Quote-line grain list-to-net price build-up (list amount, discount amount,
+      net amount), with the price book's list price alongside for the
+      pricing-integrity test.
+    columns:
+      - name: quote_line_id
+        description: Primary key — CPQ quote line id.
+        data_tests: [unique, not_null]

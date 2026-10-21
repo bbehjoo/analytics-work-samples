@@ -1,0 +1,5 @@
+price_book_id,price_book_name,region,currency_code,is_active
+PB-NA,NA Standard,NA,USD,1
+PB-EMEA,EMEA Standard,EMEA,USD,1
+PB-APAC,APAC Standard,APAC,USD,1
+PB-LATAM,LATAM Standard,LATAM,USD,1

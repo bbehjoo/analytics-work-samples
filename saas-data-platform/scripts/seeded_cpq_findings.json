@@ -1,0 +1,9 @@
+{
+  "unapproved_discounts": 9,
+  "approval_threshold": 0.25,
+  "quarter_end_extra_discount": 0.06,
+  "heavy_discounters": [
+    "USR-002",
+    "USR-025"
+  ]
+}

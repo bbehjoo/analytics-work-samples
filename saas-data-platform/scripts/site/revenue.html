@@ -1,7 +1,7 @@
 <div class="rwrap">
   <span class="pill">Work sample · synthetic data · generated from the dbt marts</span>
   <h1 class="rh1">Revenue Insights — Year-End Business Review</h1>
-  <div class="rsub">A visual read of the Salesforce + NetSuite revenue marts. Every number is computed from <code>fct_arr</code>, <code>fct_acv</code>, <code>fct_usage</code> and <code>rpt_contract_to_netsuite_recon</code> each time the site is built.</div>
+  <div class="rsub">A visual read of the Salesforce (CRM + CPQ) and NetSuite revenue marts. Every number is computed from <code>fct_arr</code>, <code>fct_acv</code>, <code>fct_usage</code>, <code>fct_quote</code> and the reconciliation marts each time the site is built.</div>
 
   <div class="kpis">
     <div class="kpi"><div class="v">{{ending_arr}}</div><div class="l">Ending ARR</div><div class="s">Dec {{last_year}} run-rate</div></div>
@@ -10,6 +10,9 @@
     <div class="kpi"><div class="v">{{fy_bookings}}</div><div class="l">Bookings ACV (FY{{last_year}})</div><div class="s">closed-won</div></div>
     <div class="kpi"><div class="v">{{pipeline}}</div><div class="l">Open Pipeline ACV</div><div class="s">{{pipeline_n}} opportunities</div></div>
     <div class="kpi"><div class="v">{{at_risk}}</div><div class="l">$ at risk (recon)</div><div class="s">Salesforce vs NetSuite</div></div>
+    <div class="kpi"><div class="v">{{avg_disc}}</div><div class="l">Average discount</div><div class="s">off list, won new pricing</div></div>
+    <div class="kpi"><div class="v">{{win_rate}}</div><div class="l">Quote win rate</div><div class="s">new business &amp; expansion, {{decided}} decided</div></div>
+    <div class="kpi"><div class="v">{{unapproved_n}}</div><div class="l">Discounts without approval</div><div class="s">{{unapproved_amt}} of deals over the {{threshold}} policy</div></div>
   </div>
 
   <div class="card" id="growth">
@@ -71,5 +74,28 @@
         <p>Work the {{missing_n}} missing and {{orphan_n}} orphan records first; auto-clear currency rounding with a materiality threshold; make this a standing month-end check.</p>
       </div>
     </div>
+  </div>
+
+  <div class="card" id="pricing">
+    <h2>5 · Pricing &amp; discount discipline — quote to cash</h2>
+    <div class="src">Source: <code>fct_quote</code>, <code>rpt_quote_to_cash</code> · every primary quote ties to its booking to the cent, and every list price to its price book (enforced by dbt tests)</div>
+    <div class="rgrid" style="align-items:start">
+      <div>
+        <div class="chart-title">Average discount off list, won new pricing</div>
+        <div class="chart" data-chart="discount_timing" style="min-height:0"></div>
+        <div class="chart-title" style="margin-top:16px">By segment</div>
+        <div class="chart" data-chart="discount_segment" style="min-height:0"></div>
+      </div>
+      <div class="rnote">
+        <h3>What it is</h3>
+        <p>Every quote priced against its regional price book, from first draft to the primary quote the deal was booked on, then followed through contract, ERP order and invoice.</p>
+        <h3>Why it matters</h3>
+        <p>Deals closed in the last month of a quarter carry <span class="tag bad">{{qe_disc}}</span> discount against {{other_disc}} in other months: {{qe_gap}} points of price given away to hit the quarter. And <span class="tag bad">{{unapproved_n}} deals</span> worth {{unapproved_amt}} closed above the {{threshold}} policy with no approval on record.</p>
+        <h3>What to do</h3>
+        <p>Hold quarter-end deals to the same approval path as the rest of the quarter, and stop contracts generating from quotes over the threshold until they're approved. Approvals already take only {{approval_days}} days on average, so the control costs almost nothing.</p>
+      </div>
+    </div>
+    <div class="chart-title" style="margin-top:18px">Won deals, quote to invoice</div>
+    <div class="chart" data-chart="q2c_split" style="min-height:0"></div>
   </div>
 </div>

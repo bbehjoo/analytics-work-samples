@@ -161,3 +161,85 @@ metrics:
     type_params:
       numerator: total_consumed_units
       denominator: total_entitled_units
+
+  # ------------------------------ Pricing (CPQ) ---------------------------
+  - name: won_list_amount
+    label: Won List Amount
+    description: List value of accepted primary quotes.
+    type: simple
+    type_params:
+      measure: quote_list_amount
+    filter: "{{ Dimension('quote__primary_status') }} = 'Accepted'"
+
+  - name: won_net_amount
+    label: Won Net Amount
+    type: simple
+    type_params:
+      measure: quote_net_amount
+    filter: "{{ Dimension('quote__primary_status') }} = 'Accepted'"
+
+  - name: won_discount_amount
+    label: Won Discount Amount
+    type: simple
+    type_params:
+      measure: quote_discount_amount
+    filter: "{{ Dimension('quote__primary_status') }} = 'Accepted'"
+
+  - name: average_discount
+    label: Average Discount
+    description: Discount off list, weighted by list value, on won deals.
+    type: ratio
+    type_params:
+      numerator: won_discount_amount
+      denominator: won_list_amount
+
+  - name: price_realization
+    label: Price Realization
+    description: Net price as a share of list, on won deals.
+    type: ratio
+    type_params:
+      numerator: won_net_amount
+      denominator: won_list_amount
+
+  - name: won_quote_count
+    label: Won Quotes
+    description: Won primary quotes for new pricing (New Business, Expansion).
+    type: simple
+    type_params:
+      measure: quote_count
+    filter: "{{ Dimension('quote__primary_status') }} = 'Accepted' and {{ Dimension('quote__opportunity_type') }} in ('New Business', 'Expansion')"
+
+  - name: decided_quote_count
+    label: Decided Quotes
+    description: Primary quotes for new pricing on closed deals, won or lost. Renewals are excluded; they almost always close.
+    type: simple
+    type_params:
+      measure: quote_count
+    filter: "{{ Dimension('quote__primary_status') }} in ('Accepted', 'Rejected') and {{ Dimension('quote__opportunity_type') }} in ('New Business', 'Expansion')"
+
+  - name: quote_win_rate
+    label: Quote Win Rate
+    type: ratio
+    type_params:
+      numerator: won_quote_count
+      denominator: decided_quote_count
+
+  - name: total_approval_days
+    label: Total Approval Days
+    type: simple
+    type_params:
+      measure: approval_days
+
+  - name: approved_quote_count
+    label: Approved Quotes
+    type: simple
+    type_params:
+      measure: approved_quotes
+
+  - name: average_approval_days
+    label: Average Approval Days
+    description: Days from approval request to decision, on approved quotes.
+    type: ratio
+    type_params:
+      numerator: total_approval_days
+      denominator: approved_quote_count

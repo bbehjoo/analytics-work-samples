@@ -40,7 +40,7 @@ ROLES_CSV = os.path.join(DBT_DIR, "seeds", "governance", "roles.csv")
 
 PERSONAL = re.compile(
     r"(email|birth|postal|salary|(^|_)pay(_|$)|bonus|equity|gender|leave|"
-    r"(rep|owner|user|employee|person|manager)_?name|^employee_name$)")
+    r"(rep|owner|user|employee|person|manager|contact|approver)_?name|^employee_name$)")
 RANK = {None: -1, "internal": 0, "confidential": 1, "pii": 2, "restricted": 3}
 PROOF_TESTS = [
     ("assert_no_pii_leaks", "No masked value matches the original, and hidden columns are really gone"),
@@ -51,6 +51,9 @@ PROOF_TESTS = [
     ("assert_arr_continuity", "Each month's ending ARR is the next month's beginning ARR"),
     ("assert_acv_equals_components", "Every deal's ACV equals its recurring plus one-time value"),
     ("assert_recon_category_counts", "The CRM-to-ERP reconciliation finds every seeded discrepancy"),
+    ("assert_primary_quote_ties_to_bookings", "Every deal has one primary quote, and it ties to the booking to the cent"),
+    ("assert_list_prices_match_price_book", "No quote invents its own list price"),
+    ("assert_unapproved_discounts_match_seeded", "The approvals check finds every discount closed above policy without sign-off"),
 ]
 
 

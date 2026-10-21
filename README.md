@@ -11,10 +11,10 @@ proprietary.
 ## 1. [`saas-data-platform/`](saas-data-platform/) — B2B SaaS data platform: revenue, people, and who sees what
 
 A production-shaped **dbt** project that models one B2B SaaS company end to end:
-the revenue stack — **Salesforce** (CRM) + **NetSuite** (ERP) + product usage — and
+the revenue stack — **Salesforce** (CRM + CPQ) + **NetSuite** (ERP) + product usage — and
 the **HRIS** (people, pay, leave), with a **MetricFlow semantic layer**, governed
 access to personal data, data tests, and full documentation. It runs locally on
-**DuckDB** with generated data (`dbt build` → `PASS=197`), the SQL is
+**DuckDB** with generated data (`dbt build` → `PASS=252`), the SQL is
 BigQuery-portable, and CI rebuilds and re-tests everything on every push.
 
 It mirrors the revenue marts I've built in B2B SaaS, rebuilt from scratch on
@@ -30,13 +30,18 @@ accountable for.
   / upsell / downgrade / churn / scheduled) that **reconciles to the cent**, ACV vs
   ARR modeled as genuinely distinct facts, and a **Salesforce↔NetSuite
   reconciliation** that surfaces real finance discrepancies.
+- **Quote to cash, end to end** — CPQ quotes priced off regional price books,
+  list-to-net discounting, and approvals for discounts above policy; every
+  primary quote ties to its booking to the cent, and one report follows each
+  deal from quote → booking → contract → ERP order → invoice.
 - **Sensitive data governed by design** — every column about a person (PII, pay,
   health/PHI, demographics) is classified; **one policy file** generates a secure
   view per role (HR, Finance, Sales manager, Analyst, AI agent) with masking,
   pseudonymization, banding and row-level filters; groups under 5 are suppressed.
-- **Proof, not promises** — 132 dbt tests, including singular "proof" tests that
-  assert the waterfall balances, the reconciliation is complete, **no PII leaks**
-  through any view, and pay, health and gender never reach analysts or AI.
+- **Proof, not promises** — 173 dbt tests, including 11 singular "proof" tests that
+  assert the waterfall balances, the reconciliation is complete, quotes tie to
+  bookings, every discount above policy is caught, **no PII leaks** through any
+  view, and pay, health and gender never reach analysts or AI.
 - **Ownership** — every model has a named owning team, certified models have
   **enforced contracts**, and a governance check fails CI if ownership or
   classification slips. The same access rules map to BigQuery grants, row access

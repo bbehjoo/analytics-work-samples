@@ -14,11 +14,11 @@ matters, what to do.*
 
 ## Executive summary
 
-- **ARR per employee peaked at $220k in June 2025 and slipped back to $199k by
-  December.** Headcount grew 18% in the second half while ARR grew 7%.
+- **ARR per employee peaked at $226k in June 2025 and slipped back to $208k by
+  December.** Headcount grew 18% in the second half while ARR grew 9%.
 - **Customer Success loses 31% of its people a year**, three times the company
   rate of 11%, and every exit in 2025 was voluntary. It is the team that owns
-  renewals, in the year churn tripled to $8.3M.
+  renewals, in the year churn tripled to $8.5M.
 - **Company-wide, women and men are paid the same on average. At L4 they are
   not**: women are paid 6.4% less than men against the same pay band. Closing it
   costs about $345k a year, 0.7% of base payroll.
@@ -32,17 +32,17 @@ that joins the revenue and people domains. *(Source: `rpt_people__revenue_per_em
 
 | Month-end | ARR | Headcount | ARR per employee |
 |---|---:|---:|---:|
-| Dec 2023 | $30.8M | 190 | $162k |
-| Dec 2024 | $57.0M | 285 | $200k |
-| Jun 2025 | $76.5M | 348 | **$220k** |
-| Dec 2025 | $82.1M | 412 | $199k |
+| Dec 2023 | $30.6M | 190 | $161k |
+| Dec 2024 | $57.8M | 285 | $203k |
+| Jun 2025 | $78.6M | 348 | **$226k** |
+| Dec 2025 | $85.7M | 412 | $208k |
 
 **Why it matters.** Each new hire supported more ARR through 2024 and the first
 half of 2025. In the second half the company added 64 people (348 to 412) while
-ARR grew by $5.5M. Efficiency is back where it was a year ago.
+ARR grew by $7.1M. Efficiency is back near where it was a year ago.
 
 **What to do.** Use ARR per employee as a guardrail on the 2026 hiring plan: approve
-headcount against planned ARR so the ratio holds at $200k or better, and review it
+headcount against planned ARR so the ratio holds at $205k or better, and review it
 monthly next to the ARR bridge.
 
 ---
@@ -64,8 +64,8 @@ department. *(Source: `rpt_people__department_summary`.)*
 | Legal | fewer than 5 | suppressed | suppressed | suppressed |
 | **Company** | **412** | **10.7%** | **8.8%** | |
 
-**Why it matters.** Customer Success owns renewals, and churn went from $2.6M in
-2024 to $8.3M in 2025 (see the revenue report). The two may be linked, but this
+**Why it matters.** Customer Success owns renewals, and churn went from $2.7M in
+2024 to $8.5M in 2025 (see the revenue report). The two may be linked, but this
 data can't show it yet. Pay isn't the obvious cause: Customer Success is paid at
 the band midpoint, the same as everyone else.
 

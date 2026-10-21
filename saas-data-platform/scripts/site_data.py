@@ -103,7 +103,35 @@ def revenue(con):
         from marts.rpt_contract_to_netsuite_recon
         where discrepancy_category <> 'matched_clean'
         group by 1 order by 3 desc""")
+    # --- CPQ: discounting on won new pricing, approvals, quote to cash ---------
+    new_pricing = ("from marts.fct_quote where is_primary and quote_status = 'Accepted' "
+                   "and opportunity_type in ('New Business', 'Expansion')")
+    disc_timing = rows(con, f"""
+        select is_quarter_end_month, sum(discount_amount) / sum(list_amount) as discount, count(*) as deals
+        {new_pricing} group by 1 order by 1 desc""")
+    disc_segment = rows(con, """
+        select a.segment, sum(q.discount_amount) / sum(q.list_amount) as discount
+        from marts.fct_quote q join marts.dim_account a using (account_key)
+        where q.is_primary and q.quote_status = 'Accepted' and q.opportunity_type in ('New Business', 'Expansion')
+        group by 1 order by 2 desc""")
+    avg_disc, = one(con, f"select sum(discount_amount) / sum(list_amount) {new_pricing}")
+    win_rate, decided = one(con, """
+        select avg(case when quote_status = 'Accepted' then 1.0 else 0 end), count(*)
+        from marts.fct_quote
+        where is_primary and quote_status in ('Accepted', 'Rejected') and opportunity_type in ('New Business', 'Expansion')""")
+    appr = rows(con, """
+        select count(*) filter (where requires_approval)                          as required,
+               count(*) filter (where requires_approval and is_approved)          as approved,
+               count(*) filter (where requires_approval and not is_approved)      as unapproved,
+               sum(net_amount) filter (where requires_approval and not is_approved) as unapproved_amount,
+               avg(approval_cycle_days) filter (where is_approved)                as approval_days
+        from marts.fct_quote""")[0]
+    q2c = rows(con, """
+        select quote_to_cash_status as status, count(*) as n
+        from marts.rpt_quote_to_cash group by 1 order by 2 desc""")
     return {
+        "cpq": {"timing": disc_timing, "segment": disc_segment, "avg_discount": avg_disc,
+                "win_rate": win_rate, "decided": decided, "approvals": appr, "q2c": q2c},
         "ending_arr": ending, "nrr": nrr, "grr": grr,
         "fy": fy, "fy_bookings": fy_bookings,
         "pipeline_acv": pipeline_acv, "pipeline_n": pipeline_n,

@@ -114,3 +114,86 @@ models:
               arguments:
                 to: ref('stg_salesforce__products')
                 field: product_id
+
+  - name: stg_salesforce__quotes
+    description: CPQ quotes, typed. The customer contact on each quote is personal data and stays in staging.
+    columns:
+      - name: quote_id
+        description: Primary key — CPQ quote id.
+        data_tests: [unique, not_null]
+      - name: opportunity_id
+        description: The opportunity this quote prices.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__opportunities')
+                field: opportunity_id
+      - name: quote_status
+        description: Accepted (won), Rejected (lost), Presented (open) or Superseded (an earlier draft).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Accepted', 'Rejected', 'Presented', 'Superseded']
+      - name: contact_name
+        description: The customer's contact on the quote.
+        config: {meta: {sensitivity: pii, category: identity}}
+      - name: contact_email
+        description: The customer contact's email.
+        config: {meta: {sensitivity: pii, category: work_contact}}
+
+  - name: stg_salesforce__quote_lines
+    description: CPQ quote lines, typed.
+    columns:
+      - name: quote_line_id
+        description: Primary key — CPQ quote line id.
+        data_tests: [unique, not_null]
+      - name: quote_id
+        description: Parent quote.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__quotes')
+                field: quote_id
+
+  - name: stg_salesforce__quote_approvals
+    description: Discount approvals, typed. The approver is an employee, so the name is personal data.
+    columns:
+      - name: approval_id
+        description: Primary key — approval id.
+        data_tests: [unique, not_null]
+      - name: quote_id
+        description: The quote approved.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_salesforce__quotes')
+                field: quote_id
+      - name: approval_level
+        description: Sales VP or CFO.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Sales VP', 'CFO']
+      - name: approver_name
+        description: Who approved.
+        config: {meta: {sensitivity: pii, category: identity}}
+
+  - name: stg_salesforce__price_books
+    description: CPQ price books, one per region.
+    columns:
+      - name: price_book_id
+        description: Primary key — price book id.
+        data_tests: [unique, not_null]
+
+  - name: stg_salesforce__price_book_entries
+    description: List price per product, price book and year.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [price_book_id, product_id, effective_year]
+    columns:
+      - name: price_book_entry_id
+        description: Primary key — price book entry id.
+        data_tests: [unique, not_null]

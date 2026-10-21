@@ -2,9 +2,10 @@
 
 One B2B SaaS company's data platform, end to end, in one dbt project:
 
-- **Revenue.** **Salesforce** (CRM), **NetSuite** (ERP) and product usage, modeled into
-  a star schema of revenue marts with a **MetricFlow semantic layer**: ARR waterfall,
-  bookings, retention, and a CRM-to-ERP reconciliation.
+- **Revenue.** **Salesforce** (CRM + CPQ), **NetSuite** (ERP) and product usage, modeled
+  into a star schema of revenue marts with a **MetricFlow semantic layer**: ARR
+  waterfall, bookings, retention, pricing and discount approvals, and quote to cash
+  reconciled end to end.
 - **People.** An **HRIS** (names, pay, leave, gender), modeled into a restricted
   people domain with role-scoped secure views and suppressed aggregates.
 - **Governance.** Every column that describes a person is classified, one policy
@@ -40,7 +41,7 @@ python scripts/build_site.py              # regenerate the published pages in ..
 ```
 
 `dbt build` runs the whole pipeline and every test in one command (expect
-`PASS=197`). A `warehouse.duckdb` file is created in this folder and is git-ignored.
+`PASS=252`). A `warehouse.duckdb` file is created in this folder and is git-ignored.
 CI runs the same steps on every push ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)).
 
 ---
@@ -59,6 +60,7 @@ raw_salesforce / raw_netsuite / raw_usage          raw_hris                     
         │            • monthly ARR spine + waterfall     │
         │            • usage vs entitlement              │
         │            • SFDC <-> NetSuite match           │
+        │            • quote pricing: list -> net         │
         │                                                │
    marts/          star schema (below)  <── keys ──  people/          dim_employee (restricted,
         │                               bridge            │             contract enforced),
@@ -85,6 +87,9 @@ See **[DATA_MODEL.md](DATA_MODEL.md)** for the ERDs and per-mart build-up DAGs.
 | `fct_arr` | account × product × month | **Recurring run-rate & ARR waterfall.** Movement buckets sum to net new ARR. Contract enforced. |
 | `fct_usage` | account × product × month | Consumption vs entitlement; overage / under-utilization signals. |
 | `rpt_contract_to_netsuite_recon` | contract ↔ order | Finance reconciliation with discrepancy categories. |
+| `fct_quote` | quote | **Pricing & discount discipline.** List vs net, discount, whether a discount above policy was approved. |
+| `fct_quote_line` | quote line | List price, discount and net price per product on every quote version. |
+| `rpt_quote_to_cash` | won opportunity | Quote → booking → contract → ERP order → invoice, with one status for where the chain breaks. |
 
 ### The people models
 
@@ -135,6 +140,16 @@ test, with a companion test that ending ARR is continuous month to month.
 currency rounding, partial billing). A closed-loop test asserts the mart surfaces
 exactly the discrepancies the generator seeded.
 
+**Pricing is modeled from list to net.** Each deal is priced off a regional price
+book (list rises 5% a year) and discounted; quotes record every version a rep sent,
+and the primary quote is what the deal was booked on. Discounts are measured over
+what's being sold, against list. New pricing more than 25% off list needs a Sales VP,
+more than 35% the CFO (`var('discount_approval_threshold')`); renewals keep the
+contracted price and need none. Money columns are typed explicitly in
+`dbt_project.yml`: left to inference, a seed column whose early rows are whole dollars
+loads as INTEGER and silently drops every later cent, which the quote tie-out test
+caught.
+
 **Pay equity is measured within level, against the band.** Compa-ratio (salary ÷
 band midpoint for the person's level and region) compared across genders *within a
 level* is like for like. The company-wide average can look equal while one level
@@ -148,10 +163,11 @@ hides a gap, and in this data it does.
 
 ## Semantic layer (MetricFlow)
 
-`models/semantic/` defines semantic models over the marts and ~20 metrics — `total_arr`,
+`models/semantic/` defines semantic models over the marts and 31 metrics — `total_arr`,
 `net_new_arr`, `new_logo_arr`, `expansion_arr`, `net_revenue_retention`,
 `gross_revenue_retention`, `bookings_acv`, `pipeline_acv`, `average_deal_acv`,
-`average_utilization`, … — so a metric is defined once and sliced consistently by the
+`average_utilization`, `average_discount`, `price_realization`, `quote_win_rate`,
+`average_approval_days`, … — so a metric is defined once and sliced consistently by the
 shared `account`, `product`, and `sales_rep` dimensions.
 
 ```bash
@@ -173,7 +189,7 @@ metrics and the `secure_ai_agent` aggregates, never a person-level row.
 
 ## Tests
 
-`dbt build` runs **132 data tests**:
+`dbt build` runs **173 data tests**:
 
 - **Generic:** `unique` / `not_null` on keys, `relationships` (fact → dim FKs),
   `accepted_values` (revenue categories, statuses, departments), and `dbt_utils`
@@ -182,6 +198,9 @@ metrics and the `secure_ai_agent` aggregates, never a person-level row.
   name or type changes.
 - **Proof tests (in `tests/`), revenue:** ARR waterfall integrity, ARR continuity,
   the ACV identity, and the reconciliation closed-loop count check.
+- **Proof tests, quote to cash:** every primary quote ties to its booking to the cent;
+  every list price matches its price book; the approvals check finds exactly the
+  discounts the generator closed above policy without sign-off (closed loop).
 - **Proof tests, governance:** no PII leaks through any secure view; restricted data
   never reaches analysts or the AI agent; row filters hold exactly; no metric for a
   group under 5. See [GOVERNANCE.md](GOVERNANCE.md#the-proof).

@@ -441,3 +441,126 @@ models:
                   ['matched_clean', 'amount_mismatch', 'currency_rounding',
                    'partially_invoiced', 'timing_difference',
                    'missing_in_netsuite', 'orphan_in_netsuite']
+
+  # =========================================================================
+  # CPQ: pricing, discounts, approvals, and quote to cash
+  # =========================================================================
+  - name: fct_quote_line
+    description: >
+      Pricing fact at quote-line grain: list price, discount and net price for
+      every product on every quote version. Filter is_primary for what deals
+      were booked on.
+    columns:
+      - name: quote_line_key
+        description: Surrogate key (hash of quote_line_id).
+        data_tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_account')
+                field: account_key
+      - name: product_key
+        description: FK to dim_product.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: sales_rep_key
+        description: FK to dim_sales_rep (quote owner).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_sales_rep')
+                field: sales_rep_key
+      - name: list_amount
+        description: Quantity x list price.
+      - name: discount_amount
+        description: List amount minus net amount.
+      - name: net_amount
+        description: What the customer pays for the line.
+
+  - name: fct_quote
+    description: >
+      Quote grain: price against list and whether a discount above policy was
+      approved. requires_approval applies to accepted primary quotes for new
+      pricing (New Business, Expansion) above var('discount_approval_threshold').
+    columns:
+      - name: quote_key
+        description: Surrogate key (hash of quote_id).
+        data_tests: [unique, not_null]
+      - name: quote_id
+        description: CPQ quote id.
+        data_tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_account')
+                field: account_key
+      - name: sales_rep_key
+        description: FK to dim_sales_rep (quote owner).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_sales_rep')
+                field: sales_rep_key
+      - name: quote_status
+        description: Accepted, Rejected, Presented or Superseded.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Accepted', 'Rejected', 'Presented', 'Superseded']
+      - name: is_quarter_end_month
+        description: The deal closed in the last month of a quarter.
+      - name: list_amount
+        description: List value of the products being sold (positive lines).
+      - name: discount_amount
+        description: List amount minus net amount.
+      - name: net_amount
+        description: Net value of the products being sold (positive lines).
+      - name: net_total
+        description: Net total of all lines, including negative (downgrade) lines; ties to the booking for the primary quote.
+      - name: discount_pct
+        description: 1 - net / list over the products being sold.
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 0.6
+      - name: requires_approval
+        description: Accepted primary quote for new pricing, discounted beyond the approval threshold.
+      - name: approval_level_required
+        description: Sales VP above the threshold, CFO above the CFO threshold.
+      - name: is_approved
+        description: An approval was recorded for the quote.
+      - name: approval_cycle_days
+        description: Days from approval request to decision.
+
+  - name: rpt_quote_to_cash
+    description: >
+      One row per won opportunity: primary quote -> booking -> contract ->
+      NetSuite order -> invoice, with a single status saying where the chain
+      breaks, if anywhere.
+    columns:
+      - name: quote_to_cash_key
+        description: Surrogate key (hash of opportunity_id).
+        data_tests: [unique, not_null]
+      - name: account_key
+        description: FK to dim_account.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_account')
+                field: account_key
+      - name: quote_to_cash_status
+        description: clean, or the first place the chain breaks.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['clean', 'no primary quote', 'quote does not tie to booking', 'discount not approved', 'no contract',
+                         'missing_in_netsuite', 'amount_mismatch', 'timing_difference', 'currency_rounding', 'partially_invoiced']
