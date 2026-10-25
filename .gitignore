@@ -17,3 +17,9 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local secrets (never commit)
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
