@@ -6,6 +6,11 @@ Two samples of how I build and own data: models, governance, and the decisions
 they support. Everything here is **synthetic or my own published work** — nothing
 proprietary.
 
+More of my work: **[databybehrang.com](https://databybehrang.com)** (portfolio) ·
+**[Follow the AI dollar](https://dataisugly.com/ai-dollar/)** on
+**[dataisugly.com](https://dataisugly.com)** (17 AI deals checked against SEC filings,
+built by AI agents under a fact-check).
+
 ---
 
 ## 1. [`saas-data-platform/`](saas-data-platform/) — B2B SaaS data platform: revenue, people, and who sees what
